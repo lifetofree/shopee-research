@@ -31,8 +31,9 @@
     try {
       const url = typeof args[0] === "string" ? args[0] : (args[0] && args[0].url) || "";
       if (isWatched(url) && response.ok) {
+        console.log("[ShopeeTH] intercepted affiliate fetch:", url.slice(0, 80));
         const clone = response.clone();
-        clone.text().then((text) => relay(url, text)).catch(() => {});
+        clone.text().then((text) => relay(url, text)).catch((e) => console.log("[ShopeeTH] relay text err:", e));
       }
     } catch (e) {}
     return response;

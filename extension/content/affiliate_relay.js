@@ -30,7 +30,11 @@
       return;
     }
     const list = parsed && parsed.data && parsed.data.list ? parsed.data.list : [];
-    if (!Array.isArray(list)) return;
+    if (!Array.isArray(list)) {
+      console.log("[ShopeeTH] relay: no data.list in response — keys:", Object.keys(parsed));
+      return;
+    }
+    console.log("[ShopeeTH] relay: caching", list.length, "affiliate items");
 
     for (const listItem of list) {
       try {
