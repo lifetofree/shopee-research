@@ -98,6 +98,21 @@ If we ever automate (e.g. periodic refresh), enforce:
 - exponential backoff on `error_msg`/`error === 90309999`,
 - one browser fingerprint per cookie (don't share the cookie across machines / processes).
 
+### 2.7 Surface A is ALSO blocked by the anti-bot token wall (2026-07-16) — OVERRIDES §2.3
+
+**This finding invalidates the central assumption of this write-up** (that `af-ac-enc-dat: null` + `x-api-source: pc` defeats Surface A's anti-bot for server-side replay). Tested empirically against the live Thai portal on 2026-07-16:
+
+- A **freshly re-logged** `shopee.co.th` cookie (verified: `SPC_ST` rotated to a new value; Shopee returns `"is_login":true`) **still returns `error: 90309999`** when called via plain server-side `httpx` with the documented headers.
+- Tested across three header combinations — all fail identically:
+  - `af-ac-enc-dat: null` + `x-api-source: pc` (the documented trick): HTTP 200, `error=90309999`, `is_login=true`.
+  - Bare cookie, no trick headers: HTTP 403, `error=90309999`, `is_login=true`.
+  - `is_short_url` bootstrap first (to refresh the cookie session): bootstrap succeeds (200 + 5 `Set-Cookie`), but the subsequent search **still** returns `error=90309999`.
+- `is_login: true` in every response proves the cookie is valid and the session is authenticated — the rejection is **purely** the anti-bot layer, not auth.
+
+**Conclusion:** Shopee Thailand has hardened Surface A with the same per-request browser-generated token (`x-sap-sec` + `af-ac-enc-sz-token` + `x-sap-ri`, produced by the `shopee__web_enhance_sap` client-side SDK) that guards Surface B. A server-side `httpx` call cannot produce these tokens, so **neither surface is server-side replayable as of 2026-07-16.** The §2.3 header trick was correct circa 2022 (per the StackOverflow source) but no longer works.
+
+**Implication for the app architecture:** a local server-side FastAPI app cannot fetch Shopee data at all — not commission (Surface B), and now not image/price/sold (Surface A). The only viable path is a **browser extension** running inside the user's real everyday Chrome, where the `x-sap-sec` token is generated naturally by Shopee's own SDK. The extension reads search results from the page DOM (or intercepts the page's own authenticated API responses) and forwards them to a local app. See the map's "Out of scope / re-architecture" note for the new direction.
+
 ---
 
 ## 3. Surface B — `affiliate.shopee.co.th` (the affiliate portal SPA)
