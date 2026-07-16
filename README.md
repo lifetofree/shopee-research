@@ -40,6 +40,13 @@ Open <http://localhost:8000>, type a product name, save items, click **Generate 
 | `make refresh-cookie` | Headed Chromium → log in to Shopee → persist cookies to `.env`. |
 | `make capture-affiliate-traffic` | Empirical Surface B capture to `docs/research/affiliate-observed-traffic.json`. |
 
+## Troubleshoot
+
+- **Search fails / cookie expired**: re-run `make refresh-cookie` and log in again — Shopee session cookies expire and are also bound to the browser fingerprint that produced them, so cookies copied from anywhere other than that helper run will fail.
+- **`error: 90309999` from Shopee**: the cookie doesn't match the browser fingerprint it was issued to (e.g. copied from another machine/browser). Re-run `make refresh-cookie`; don't hand-copy cookies from a different session.
+- **`make refresh-cookie` times out**: the login step has a 5-minute window per site. Re-run the command and complete the login (or captcha, if one appears) before it lapses.
+- **Commission always shows blank**: expected until `capture-affiliate-portal-traffic` lands a confirmed Surface B contract — the affiliate leg is best-effort in the meantime.
+
 ## Layout
 
 See [`docs/SPEC.md`](docs/SPEC.md) for the full structure; the package is `src/shopee_th/{api,services,models,templates}/` with `scripts/`, `tests/`, and `docs/` at the project root.

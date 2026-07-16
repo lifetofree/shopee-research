@@ -3,7 +3,7 @@ name: Dev runbook + end-to-end smoke test
 labels: [wayfinder:task]
 status: open
 assignee: unassigned
-blocked_by: [build-single-page-html-js-frontend, implement-playwright-cookie-refresh-helper]
+blocked_by: [build-single-page-html-js-frontend, implement-cookie-refresh-helper]
 parent: map
 created: 2026-07-16
 ---

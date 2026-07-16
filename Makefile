@@ -45,7 +45,8 @@ dev-reset:
 	rm -f data/shopee_th.db .env
 
 refresh-cookie:
-	@echo "TODO(bootstrap-ticket): implement in implement-cookie-refresh-helper."
+	$(UV) run playwright install chromium
+	$(UV) run python scripts/refresh_cookie.py
 
 capture-affiliate-traffic:
 	@echo "TODO(capture-affiliate-portal-traffic): implement in the dedicated ticket."
