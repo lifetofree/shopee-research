@@ -108,35 +108,59 @@ A SPA at `https://affiliate.shopee.co.th` whose backend is implemented as **JSON
 
 This is the surface that **exposes commission** to logged-in affiliates, so it is the surface we depend on for that field.
 
-### 3.2 Why this is research, not yet implementation
+### 3.2 Empirically confirmed (2026-07-16 live capture)
 
-**The actual endpoint URLs and required headers on `affiliate.shopee.co.th` are not in any public-facing documentation reviewed for this writeup.** They are implementer-side and versioned. To get them concretely, an authenticated session must be opened and DevTools Network tab captured while typing a search term. The Playwright cookie helper will itself produce this data as a side effect of "log in → wait for landing page"; we should pipe those captured calls into a dump file on first run.
+A real signed-in browser session was captured via DevTools (HAR export). The full, scrubbed contract is at `docs/research/affiliate-observed-traffic.json`. **Confirmed findings, superseding the §3.3 inference:**
 
-### 3.3 What we expect to find (informed inference)
+- **The product-offer endpoint is REST, not GraphQL.** The inference that it was a `productOfferV2` GraphQL query was **wrong**. The actual surface is:
+  - **`GET https://affiliate.shopee.co.th/api/v3/offer/product/list`** with query params `list_type`, `sort_type`, `page_offset`, `page_limit`, `client_type`.
+  - Returns `{code, msg, data: {list: [...], page_offset, page_limit, total_count, trace}}`.
+  - **One call returns all four destination fields** (image, price, sold, commission), so Surface B alone could serve the destination — Surface A is only needed as a fallback / cross-check.
+- **Commission is a string percent, in three flavours** — not the single `commissionRate` the inference assumed, and not the `sellerCommissionRate + shopeeCommissionRate + commission` triple either:
+  - `seller_commission_rate` (e.g. `"7%"`) — the seller-funded rate.
+  - `default_commission_rate` (e.g. `"7%"`) — the rate used when no seller rate is set.
+  - `max_commission_rate` (e.g. `"0%"`) — the Shopee-platform bonus ceiling observed so far.
+  - **Use `seller_commission_rate`, falling back to `default_commission_rate`,** as the `commission` field on `Item`.
+- **Product data is nested** under each list item's `batch_item_for_item_card_full` object (mirrors the Surface A `item_basic` shape: `itemid`, `shopid`, `name`, `image`, `price`, `price_min`, `historical_sold`, `brand`, `currency`, …). Image is still an ID needing the `https://cf.shopee.co.th/file/` prefix.
+- **`POST /api/v3/gql`** does exist but is used for **tabs and campaigns only** (`getOfferTabList`, `isAffiliateHasNoImpressionCampaign`) — **not** for product search. The inferred `productOfferV2` operation was never observed.
 
-Based on the patterns Shopee uses across all its regional affiliate portals (VN, TH, ID, MY, PH, BR, MX, SG, TW), the search endpoint family is typically:
+### 3.3 What we expected to find (informed inference — now SUPERSEDED by §3.2)
+
+Based on the patterns Shopee uses across all its regional affiliate portals (VN, TH, ID, MY, PH, BR, MX, SG, TW), the search endpoint family was inferred to be:
 
 - `POST /graphql` (or `POST /api/v1/.../search`) — GraphQL query: `query { productOfferV2(keyword: "<q>", limit: 20, sortType: 1) { nodes { itemId commissionRate sellerCommissionRate shopeeCommissionRate commission sales priceMin priceMax productName shopName shopId imageUrl productLink … } } }`
-- `GET /api/v?...` for simple cases.
 
-`commissionRate` is a string percent ("0.06" = 6 %); `commission` is the absolute payout per item per sale (`price × commissionRate`). `sales`/`sold` and `priceMin`/`priceMax` mirror the storefront numbers. `imageUrl` is a full URL (not an ID), so no `cf.shopee.co.th/file/` prefix needed.
+**This was incorrect for the product list** — see §3.2. The GraphQL surface exists but carries tabs/campaigns, not products. Kept here only as a record of the inference that §3.2 corrected.
 
-**Strong caveat:** this is inference from VN OpenAPI documentation (`bcat95/shopee-aff`). It is high-likelihood-correct for TH because all regional affiliate portals share the same engine, but it must be confirmed by capturing traffic from the user's actual session before the search-service ticket is implemented.
+### 3.4 Lift-to-verified step — DONE
 
-### 3.4 Required steps to lift this surface from inference to verified
+Completed 2026-07-16: a manual DevTools HAR capture from a real logged-in Chrome session, parsed into `docs/research/affiliate-observed-traffic.json`. The product-list contract is now confirmed.
 
-The cookie helper script in `implement-cookie-refresh-helper.md` should be augmented (or a sibling script added) to:
+**Keyword search confirmed (second capture, 2026-07-16):** `/api/v3/offer/product/list` **does** accept a `keyword` param — the portal's own search box hits `?list_type=0&keyword=<term>&sort_type=1&page_offset=0&page_limit=20&client_type=1`. So the endpoint serves both tab-browse and keyword-search; the app's keyword-search use case is supported by this single REST endpoint.
 
-1. After login, navigate to the affiliate portal's search/product-discovery page.
-2. Subscribe to `page.on("request", ...)` and `page.on("response", ...)` for the duration of a real user search.
-3. Filter to requests targeting `affiliate.shopee.co.th/graphql` (or whatever appears) and write them to `docs/research/affiliate-observed-traffic.json`.
-4. The WriteUp's next iteration cross-references captured URLs and request bodies against the assumed GraphQL shape, and confirms or corrects.
+### 3.5 Anti-bot / captcha behaviour — empirically observed
 
-This is one focused empirical task — ~20 minutes of real-browser work plus a `curl` check — and turns the rest of the project from guesswork into a documented contract.
+The official docs on `bcat95/shopee-aff` note that "you currently do not have access to the Shopee Affiliate Open API Platform" returns `error: 10035` and rate-limit returns `10030`. The SPA itself has logged-in captcha / Turnstile on some flows.
 
-### 3.5 Anti-bot / captcha behaviour
+**Observed empirically (2026-07-16), important for tooling decisions:**
 
-The official docs on `bcat95/shopee-aff` note that "you currently do not have access to the Shopee Affiliate Open API Platform" returns `error: 10035` and rate-limit returns `10030`. The SPA itself has logged-in captcha / Turnstile on some flows (when accessing commissions for high-traffic products). Mitigation: keep request rate low (≤1/s with jittered delays), keep the cookie alive with the helper script, and back off on any 4xx.
+- **Playwright's bundled Chromium is detected and hard-walled.** Driving the portal with `playwright.chromium.launch(...)` (even with stealth flags: hidden `navigator.webdriver`, realistic UA/viewport, `--disable-blink-features=AutomationControlled`) results in a redirect to `https://shopee.co.th/verify/captcha?...&scene=crawler_item&app_key=Traffic.PC...`. The `scene=crawler_item` param is Shopee's explicit "this is a crawler" verdict.
+- **Real Chrome via `--remote-debugging-port` (CDP attach) is also detected** — softer wall: a "Loading Issue / try again" error page with a server tracking ID, rather than the captcha redirect. The open CDP endpoint is itself a detectable automation tell.
+- **A plain, manually-opened real Chrome works fine** (portal loads, logs in, returns data). No automation hooks = no detection.
+- **Implication:** any automated browser (Playwright's own, or CDP-attached) is unsuitable for *capturing* or *driving* the affiliate portal. The reliable path is manual browser + DevTools/HAR export (used for the §3.2 capture).
+
+### 3.6 Surface B is NOT server-side replayable — decision: ship Surface A only
+
+**Tested empirically (2026-07-16).** Unlike Surface A — where the `af-ac-enc-dat: null` header defeats the anti-bot and plain server-side `httpx` works — Surface B has a **second anti-bot layer that a server-side app cannot pass**:
+
+- Surface B requests require three dynamically-generated headers: `x-sap-sec` (~1.5 KB integrity signature), `af-ac-enc-sz-token`, and `x-sap-ri`. These are produced **per-request** by Shopee's client-side anti-bot SDK (`shopee__web_enhance_sap`, `x-sz-sdk-version: 1.12.21`) running inside the browser.
+- **Plain `httpx` replay with just the cookie + `af-ac-enc-dat` returns `{"is_login":true,"error":90309999,"redirect_to_error_page":true}`** — the cookie is valid (`is_login:true`) but the request is refused without a valid `x-sap-sec`.
+- **An in-page `fetch()` from a CDP-attached Chrome is *also* blocked** — Shopee's SDK detects the CDP/automation context and throws `TypeError: Failed to fetch` rather than signing the request. So "just run the fetch inside the browser" fails for the same root reason: the SDK detects automation at the token-generation step.
+- Heavier evasion (playwright-stealth, injecting into the user's running real Chrome) is technically possible but high-maintenance and likely to break on every SDK update — a poor foundation for a tool.
+
+**Decision (2026-07-16): the app ships on Surface A only.** Image, price, and sold come from the storefront API (which works server-side). Commission is **not available** to a local server-side app and shows as `null` / "—" in the UI. The confirmed Surface B contract is preserved in `docs/research/affiliate-observed-traffic.json` and §3.2 for a future architecture (most promising: a **browser extension** running in the user's real everyday Chrome, where `x-sap-sec` is generated naturally — no anti-bot workaround needed, but a different architecture than this server-side app).
+
+Mitigation for the app: keep request rate low (≤1/s with jittered delays), keep the cookie alive with the helper script, back off on any 4xx, and never drive the portal through an automated browser for data — only for the one-time login (which the user completes interactively).
 
 ---
 

@@ -44,3 +44,5 @@ data/*.db-shm
 *.swp
 *.swo
 *~
+.capture-stop
+.chrome-capture-profile/

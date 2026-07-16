@@ -1,12 +1,38 @@
 ---
 name: Capture affiliate-portal hidden API traffic
 labels: [wayfinder:task]
-status: open
+status: closed
 assignee: Claude
 blocked_by: [research-map-data-surfaces, implement-cookie-refresh-helper]
 parent: map
 created: 2026-07-16
 claimed: 2026-07-16
+closed: 2026-07-16
+---
+
+## Resolution (2026-07-16) — empirical capture COMPLETE
+
+**Deliverable produced:** `docs/research/affiliate-observed-traffic.json` — a scrubbed, truncated dump of a real logged-in Shopee Affiliate TH session, captured via a manual DevTools HAR export from the user's genuine Chrome. Surface B is now a **confirmed** contract, no longer inference.
+
+**Confirmed findings (full detail in `docs/research/data-surfaces.md` §3.2):**
+
+- The product-offer endpoint is **`GET /api/v3/offer/product/list`** (REST), **not** the inferred GraphQL `productOfferV2`. Params: `list_type`, `sort_type`, `page_offset`, `page_limit`, `client_type`.
+- **One call returns all four destination fields** (image, price, sold, commission) — Surface B alone can serve the destination.
+- **Commission** is `seller_commission_rate` / `default_commission_rate` / `max_commission_rate` (string percents like `"7%"`), **not** the single `commissionRate` or the inferred triple. Use `seller_commission_rate` → `default_commission_rate`.
+- Product data nests under each list item's `batch_item_for_item_card_full` (mirrors Surface A `item_basic`).
+- `POST /api/v3/gql` exists but carries only tabs/campaigns (`getOfferTabList`, `isAffiliateHasNoImpressionCampaign`) — **not** products. The inferred `productOfferV2` was never observed.
+
+**How the capture was actually obtained (important for future captures):**
+
+- **All automated-browser paths were detected by Shopee's anti-bot:**
+  - Playwright's bundled Chromium (even with stealth flags) → hard `scene=crawler_item` captcha redirect.
+  - Real Chrome via `--remote-debugging-port` (CDP attach) → softer "Loading Issue" error wall.
+- **Only a plain, manually-opened real Chrome worked.** The deliverable came from the user exporting a HAR file via DevTools in their everyday Chrome. `scripts/capture_affiliate_traffic.py` was extended (stop-file signal instead of stdin-EOF, gzip body decompression, resilient `goto`, system-Chrome-attach mode) but its automated path is now understood to be unviable for *this* portal; the manual HAR route is the documented method. Future captures should reuse that route.
+
+**Open sub-question (flagged, not blocking):** the captured session listed products by tab (`list_type=0`); a `keyword` param was **not** observed. Before the search-service Surface B re-implementation finalises, confirm whether `/api/v3/offer/product/list` accepts a `keyword`, or whether keyword search is a separate endpoint (one more manual capture with a keyword typed answers this). See `data-surfaces.md` §3.4.
+
+**Next:** re-implement Surface B in `services/search.py` (`_fetch_surface_b` + `AFFILIATE_GRAPHQL_QUERY`) against this REST contract, replacing the inferred GraphQL scaffolding.
+
 ---
 
 ## Progress (2026-07-16) — tooling built, empirical capture still pending

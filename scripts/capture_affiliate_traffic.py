@@ -21,9 +21,11 @@ listen and record.
 
 from __future__ import annotations
 
+import gzip
 import json
-import select
+import os
 import sys
+import time
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -34,8 +36,70 @@ DUMP_PATH = REPO_ROOT / "docs" / "research" / "affiliate-observed-traffic.json"
 
 AFFILIATE_URL = "https://affiliate.shopee.co.th/"
 AFFILIATE_HOST = "affiliate.shopee.co.th"
+
+# A realistic desktop Chrome context. Shopee's affiliate portal walls off
+# automation-fingerprinted browsers with a "Loading Issue" page (research §3.5),
+# so we launch with the automation flag hidden and a believable UA/viewport/
+# locale. This is the difference between the portal serving real data and
+# serving the soft "try again" error page.
+DESKTOP_UA = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+)
+STEALTH_LAUNCH_ARGS = ["--disable-blink-features=AutomationControlled"]
+
+# --- Real-Chrome attach path -------------------------------------------------
+# Playwright's bundled Chromium is fingerprinted by Shopee's anti-bot and
+# redirected to a `scene=crawler_item` captcha wall. To get past it, we launch
+# the system's genuine Google Chrome with a remote-debugging port and connect
+# Playwright to it as a passive listener only. Real Chrome = real fingerprint;
+# Playwright drives it over CDP but the page sees an unmodified Chrome.
+DEBUG_PORT = 9222
+# macOS default Chrome location; overridable for Linux/Windows.
+SYSTEM_CHROME_CANDIDATES = [
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    "/usr/bin/google-chrome",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+]
+
 CAPTURE_WINDOW_SECONDS = 60.0
+# Override the default window when a run needs longer (e.g. an interactive
+# login + captcha). `<= 0` means "wait until a stop file appears, no timeout".
+CAPTURE_WINDOW_ENV = "SHOPEE_TH_CAPTURE_TIMEOUT"
+# A run ends when this file appears (created by the operator), when the browser
+# window is closed, or when the timeout elapses — whichever comes first. Using a
+# file signal instead of stdin keeps the script robust to being launched with a
+# detached/closed stdin (which would otherwise end the capture instantly).
+STOP_FILE = REPO_ROOT / ".capture-stop"
 MAX_BODY_BYTES = 4096
+
+
+def _capture_window() -> float:
+    """Resolve the capture-window seconds from env, falling back to the default."""
+    raw = os.environ.get(CAPTURE_WINDOW_ENV)
+    if raw is None or raw == "":
+        return CAPTURE_WINDOW_SECONDS
+    return float(raw)
+
+
+def _touch(path: Path) -> None:
+    """Create `path` as an empty signal file (best-effort, never raises)."""
+    try:
+        path.touch()
+    except OSError:
+        pass
+
+
+def _find_system_chrome() -> str | None:
+    """Locate the system Google Chrome binary, if installed. Pure/testable."""
+    import os
+
+    for candidate in SYSTEM_CHROME_CANDIDATES:
+        if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
+            return candidate
+    return None
 
 
 def _is_target_host(url: str, host: str = AFFILIATE_HOST) -> bool:
@@ -53,6 +117,41 @@ def _truncate_body(text: str, max_bytes: int = MAX_BODY_BYTES) -> tuple[str, boo
     if len(encoded) <= max_bytes:
         return text, False
     return encoded[:max_bytes].decode("utf-8", errors="ignore"), True
+
+
+def _read_response_body(response: Response) -> str | None:
+    """Read a response body as text, transparently decompressing gzip.
+
+    `response.text()` returns an empty string for bodies that were already
+    consumed or delivered with a content-encoding the listener can't re-decode,
+    so we fetch raw bytes and decompress ourselves when needed. Returns `None`
+    for genuinely non-text bodies (images, fonts, etc.).
+    """
+    try:
+        raw = response.body()
+    except Exception:  # noqa: BLE001 - non-text / detached bodies aren't useful here
+        return None
+    if not raw:
+        return None
+    encoding = ""
+    for header, value in response.headers.items():
+        if header.lower() == "content-encoding":
+            encoding = value.lower()
+            break
+    try:
+        if "gzip" in encoding:
+            raw = gzip.decompress(raw)
+        elif "br" in encoding:
+            try:
+                import brotli  # type: ignore[import-untyped]
+            except ImportError:
+                # brotli optional; leave compressed bytes to decode with errors replaced
+                pass
+            else:
+                raw = brotli.decompress(raw)
+        return raw.decode("utf-8", errors="replace")
+    except Exception:  # noqa: BLE001 - never let body decoding break the capture
+        return None
 
 
 def _make_entry(
@@ -82,14 +181,27 @@ def _make_entry(
     }
 
 
-def _wait_for_enter_or_timeout(prompt: str, timeout_seconds: float) -> None:
-    """Block until Enter or `timeout_seconds` elapse — whichever first. Never raises.
+def _wait_for_stop_or_timeout(prompt: str, timeout_seconds: float, stop_file: Path) -> None:
+    """Block until the stop file appears or `timeout_seconds` elapse.
 
-    Unlike `refresh_cookie.py`'s login gate, running out the clock here is a
-    normal stop condition (per the ticket: "60s of typing"), not a failure.
+    `timeout_seconds <= 0` disables the timeout (wait for the stop file only).
+    Polls every 0.5 s. Never raises — running out the clock is a normal stop
+    condition here (per the ticket: "60s of typing"), not a failure.
     """
     print(prompt, flush=True)
-    select.select([sys.stdin], [], [], timeout_seconds)
+    deadline = None if timeout_seconds <= 0 else time.monotonic() + timeout_seconds
+    while True:
+        if stop_file.exists():
+            try:
+                stop_file.unlink()
+            except OSError:
+                pass
+            print("Stop file detected — ending capture.", flush=True)
+            return
+        if deadline is not None and time.monotonic() >= deadline:
+            print(f"Capture window ({timeout_seconds:.0f}s) elapsed — ending capture.", flush=True)
+            return
+        time.sleep(0.5)
 
 
 def _attach_listeners(page: Page, entries: list[dict]) -> None:
@@ -119,7 +231,7 @@ def _attach_listeners(page: Page, entries: list[dict]) -> None:
                 "post_data": request.post_data,
             }
         try:
-            body = response.text()
+            body = _read_response_body(response)
         except Exception:  # noqa: BLE001 - non-text bodies (images, etc.) aren't useful here
             body = None
         entries.append(
@@ -139,28 +251,108 @@ def _attach_listeners(page: Page, entries: list[dict]) -> None:
 
 
 def run() -> list[dict]:
+    """Launch real Chrome (debug port) + connect Playwright as a passive listener.
+
+    Why not `playwright.chromium.launch()`? Shopee's anti-bot fingerprints
+    Playwright's bundled Chromium and walls it off with a `scene=crawler_item`
+    captcha (verified empirically). The system's genuine Google Chrome has a
+    real fingerprint; we drive it over CDP purely to attach network listeners.
+    """
+    import subprocess
+
     entries: list[dict] = []
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=False)
-        context = browser.new_context()
-        page = context.new_page()
+    window = _capture_window()
+
+    chrome_path = _find_system_chrome()
+    if chrome_path is None:
+        print(
+            "Could not find the system Google Chrome. Install Chrome, or add its path "
+            "to SYSTEM_CHROME_CANDIDATES in this script.",
+            file=sys.stderr,
+        )
+        return entries
+
+    # Fresh, throwaway user-data-dir so we never disturb the user's real profile.
+    profile_dir = REPO_ROOT / ".chrome-capture-profile"
+    profile_dir.mkdir(parents=True, exist_ok=True)
+    chrome_proc = subprocess.Popen(
+        [
+            chrome_path,
+            f"--remote-debugging-port={DEBUG_PORT}",
+            f"--user-data-dir={profile_dir}",
+            "--no-first-run",
+            "--no-default-browser-check",
+            AFFILIATE_URL,
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+    browser = None
+    try:
+        with sync_playwright() as playwright:
+            # Connect to the already-running real Chrome over CDP.
+            for _ in range(20):
+                try:
+                    browser = playwright.chromium.connect_over_cdp(f"http://localhost:{DEBUG_PORT}")
+                    break
+                except Exception:  # noqa: BLE001 - Chrome may need a moment to open the port
+                    time.sleep(0.5)
+            if browser is None:
+                print(
+                    f"Could not connect to Chrome on port {DEBUG_PORT} after 10s. "
+                    "Is another Chrome instance using that port?",
+                    file=sys.stderr,
+                )
+                return entries
+
+            context = browser.contexts[0] if browser.contexts else browser.new_context()
+            page = context.new_page() if not context.pages else context.pages[0]
+            context.on("close", lambda *_: _touch(STOP_FILE))
+            try:
+                _attach_listeners(page, entries)
+                # If the fresh profile didn't auto-navigate (it usually does via the
+                # argv URL), nudge it; don't block on `load` — see note below.
+                try:
+                    if "affiliate.shopee.co.th" not in page.url:
+                        page.goto(AFFILIATE_URL, wait_until="domcontentloaded", timeout=60000)
+                except Exception as exc:  # noqa: BLE001 - navigation flakiness shouldn't end the run
+                    print(f"Initial navigation was flaky ({type(exc).__name__}); the window is "
+                          f"still open — reload the page in Chrome if needed.", flush=True)
+                timeout_desc = (
+                    "no timeout — create .capture-stop when done"
+                    if window <= 0
+                    else f"{window:.0f}s"
+                )
+                _wait_for_stop_or_timeout(
+                    "\nReal Chrome is open on affiliate.shopee.co.th. Log in, navigate to the "
+                    "search/offers page, and run a real search (e.g. 'iphone 15 case').\n"
+                    f"Capture ends when you close Chrome, when {STOP_FILE.name} appears, "
+                    f"or after {timeout_desc} — whichever first.",
+                    window,
+                    STOP_FILE,
+                )
+            finally:
+                try:
+                    browser.close()
+                except Exception:
+                    pass
+    finally:
+        chrome_proc.terminate()
         try:
-            _attach_listeners(page, entries)
-            page.goto(AFFILIATE_URL)
-            _wait_for_enter_or_timeout(
-                "\naffiliate.shopee.co.th is open. Log in if needed, navigate to the "
-                "search/offers page, and run a real search (e.g. 'iphone 15 case').\n"
-                f"Press Enter here when done, or just wait — capture stops automatically "
-                f"after {CAPTURE_WINDOW_SECONDS:.0f}s either way.",
-                CAPTURE_WINDOW_SECONDS,
-            )
-        finally:
-            context.close()
-            browser.close()
+            chrome_proc.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            chrome_proc.kill()
     return entries
 
 
 def main() -> int:
+    # Clear any stale stop file so this run doesn't end instantly.
+    if STOP_FILE.exists():
+        try:
+            STOP_FILE.unlink()
+        except OSError:
+            pass
     entries = run()
     DUMP_PATH.parent.mkdir(parents=True, exist_ok=True)
     DUMP_PATH.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n")

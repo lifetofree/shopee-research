@@ -1,0 +1,2899 @@
+[
+  {
+    "method": "GET",
+    "url": "https://affiliate.shopee.co.th/version.json?t=1784176991909",
+    "path": "/version.json",
+    "request_headers": [
+      {
+        "name": ":authority",
+        "value": "affiliate.shopee.co.th"
+      },
+      {
+        "name": ":method",
+        "value": "GET"
+      },
+      {
+        "name": ":path",
+        "value": "/version.json?t=1784176991909"
+      },
+      {
+        "name": ":scheme",
+        "value": "https"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      },
+      {
+        "name": "accept-encoding",
+        "value": "gzip, deflate, br, zstd"
+      },
+      {
+        "name": "accept-language",
+        "value": "en-US,en;q=0.9,th;q=0.8"
+      },
+      {
+        "name": "cache-control",
+        "value": "no-cache"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "pragma",
+        "value": "no-cache"
+      },
+      {
+        "name": "priority",
+        "value": "u=1, i"
+      },
+      {
+        "name": "referer",
+        "value": "https://affiliate.shopee.co.th/dashboard"
+      },
+      {
+        "name": "sec-ch-ua",
+        "value": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\""
+      },
+      {
+        "name": "sec-ch-ua-mobile",
+        "value": "?0"
+      },
+      {
+        "name": "sec-ch-ua-platform",
+        "value": "\"macOS\""
+      },
+      {
+        "name": "sec-fetch-dest",
+        "value": "empty"
+      },
+      {
+        "name": "sec-fetch-mode",
+        "value": "cors"
+      },
+      {
+        "name": "sec-fetch-site",
+        "value": "same-origin"
+      },
+      {
+        "name": "user-agent",
+        "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      }
+    ],
+    "post_data": null,
+    "status": 200,
+    "response_headers": [
+      {
+        "name": "cache-control",
+        "value": "no-cache, no-store"
+      },
+      {
+        "name": "content-length",
+        "value": "53"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "date",
+        "value": "Thu, 16 Jul 2026 04:43:12 GMT"
+      },
+      {
+        "name": "etag",
+        "value": "\"8d7a8cf706159855b5dfa64efc1e3ad0\""
+      },
+      {
+        "name": "last-modified",
+        "value": "Tue, 07 Jul 2026 11:05:08 GMT"
+      },
+      {
+        "name": "originalmd5",
+        "value": "8d7a8cf706159855b5dfa64efc1e3ad0"
+      },
+      {
+        "name": "server",
+        "value": "SGW"
+      },
+      {
+        "name": "x-cache-status",
+        "value": "HIT"
+      },
+      {
+        "name": "x-cdn",
+        "value": "staticcache"
+      },
+      {
+        "name": "x-origin",
+        "value": "uss"
+      },
+      {
+        "name": "x-ratelimit-limit",
+        "value": "1666.6666666667"
+      },
+      {
+        "name": "x-ratelimit-remaining",
+        "value": "1647.6666666667"
+      },
+      {
+        "name": "x-request-id",
+        "value": "79e00cd9-a02a-4ae9-9548-ba105bee1107"
+      },
+      {
+        "name": "x-uri",
+        "value": "/shopee-affiliate-live-th/version.json"
+      },
+      {
+        "name": "x-via",
+        "value": "69.3"
+      }
+    ],
+    "response_body_truncated": {
+      "gitTag": "tag-feature-release-20260707-184257"
+    }
+  },
+  {
+    "method": "POST",
+    "url": "https://affiliate.shopee.co.th/api/v3/gql?q=isAffiliateHasNoImpressionCampaign",
+    "path": "/api/v3/gql",
+    "request_headers": [
+      {
+        "name": ":authority",
+        "value": "affiliate.shopee.co.th"
+      },
+      {
+        "name": ":method",
+        "value": "POST"
+      },
+      {
+        "name": ":path",
+        "value": "/api/v3/gql?q=isAffiliateHasNoImpressionCampaign"
+      },
+      {
+        "name": ":scheme",
+        "value": "https"
+      },
+      {
+        "name": "accept",
+        "value": "application/json, text/plain, */*"
+      },
+      {
+        "name": "accept-encoding",
+        "value": "gzip, deflate, br, zstd"
+      },
+      {
+        "name": "accept-language",
+        "value": "en-US,en;q=0.9,th;q=0.8"
+      },
+      {
+        "name": "af-ac-enc-dat",
+        "value": "f00508027f9154d8"
+      },
+      {
+        "name": "af-ac-enc-sz-token",
+        "value": "<SCRUBBED>"
+      },
+      {
+        "name": "affiliate-program-type",
+        "value": "1"
+      },
+      {
+        "name": "content-length",
+        "value": "223"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json; charset=UTF-8"
+      },
+      {
+        "name": "csrf-token",
+        "value": "<SCRUBBED>"
+      },
+      {
+        "name": "origin",
+        "value": "https://affiliate.shopee.co.th"
+      },
+      {
+        "name": "priority",
+        "value": "u=1, i"
+      },
+      {
+        "name": "referer",
+        "value": "https://affiliate.shopee.co.th/offer/product_offer"
+      },
+      {
+        "name": "sec-ch-ua",
+        "value": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\""
+      },
+      {
+        "name": "sec-ch-ua-mobile",
+        "value": "?0"
+      },
+      {
+        "name": "sec-ch-ua-platform",
+        "value": "\"macOS\""
+      },
+      {
+        "name": "sec-fetch-dest",
+        "value": "empty"
+      },
+      {
+        "name": "sec-fetch-mode",
+        "value": "cors"
+      },
+      {
+        "name": "sec-fetch-site",
+        "value": "same-origin"
+      },
+      {
+        "name": "user-agent",
+        "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      },
+      {
+        "name": "x-sap-ri",
+        "value": "7461586a1379171bf9b7f83e050122585efc1cc30931a4a2abda"
+      },
+      {
+        "name": "x-sap-sec",
+        "value": "zXzvm0OsPGOjeal2EGI2Ea/2WGJVEfI2cG4YEgW2phIrEbI21GJBEgl2TGIwExC2NLJMEa/20GItEZE2LGJvEYv2ShIREZl27t4EECQ2uGIzEYn2RGIVEaB21LIjEgK2tL42EwQ2KGJnEjx2eGJ6Ebv2VhJDEjE2shIAEgQ2qG4bEwE2+GJUEGI2CGE2EGI2EGPbgxGvEGI2xY7Yl86rELI2EGI2h22Ll286ELI2PGs2EmiLtyn2EjGw3GE2EGI24vZ4MlODEG5dV0lLEGI2drtZcGI2EmlLEGIHEhI2C9p37GI2EbcpEtI25Gs2EGI28yr8ngoyEGI2ia2xQQszEtI2EG5Gh0D0EGJzaLIg37DNuUdTEypwELI2EG5UlGQKEG56EtI2EgUWAItL5k8P9X9CEG4jV5C2EGIkk5HPoAnjsUyGAJoaeJUzmWwVjEFSAl/0no9UEgiLLp6zQSF3JBAJhw6ePm41l6NBPbBg6p40cDOTu1Kj0wlU0tCsJSH6xnLrvM/QuK/uLgXT9nxTMRkHMFG28o/zk/5eyFUuIb+113cp6yC1hXtX0KEQVyeVlLk5zIdSO7udgaSBs2WhT6Wb9RxusEyCK0eQD4oVoEs8niSkJ3niKYmG9Me2zfRYLOUXGGyzc/TiZuMO2T6z+6yx27QKb2VV+yrEbBzg2m6OHom3imMuitPELpQ4F2DxoXRLqTgK2XMR1TWwhlY46ldG8suPK5FjQhINEGI26ULA0L2KHiO6EGI2btNW5jO2EGJSMH2qLNW0uR44C1ZTzQNef4qSrLNsUbyW7KhnFYImMHdvRHqGPOq8ou/+WAk3LrdpJ5+S+SIVjUzBmse4sXKFaIIUMTInGD09ZhJbJMHeJQOW4EOsOOhKHZoyH6ebcGFmwif7yquGAEpZTFGvQfAZ1nUTfjvCVevCUZ8TLekNi1/lF4VXlpebtsDKvpipWnxUzAMK38P12ui1WwCaolYDMhI2EGQ2EGIFJb7fShI2El4i8J5R1evYaroyEGI2EGI2EGI23LI2EjRIw+dxq/MetAr1uFaPrx9GwDzrAIC+MM9qaOiRwKFavzoCYjpMH1q2WDRBxRvQ+m9qbf7oaKFVVy2uu87P4SSEld4EVfs2EGI2EGI2EGI2hLI2EgRvjOkcCsmCviwgngjMoaHBfd6etQE2EwQ2EG5oFjANCPvkImTjTcXoteWmCjSVxl4K6oVpDNqJYMgcIM6uifx2EGI2kGI2El0ZAFueYUCwG44gxl+N71pEDrT4YMUQIQoCAmuEYnnxUr+zalSQ72o6Fyj+CImd5PdYAcbPVZBlEGI2EGD2EGJDIX+oN9tThhI2EGI2EGI2ohI2EjorT/Aq3Uf99OzA9bV0jc5QoLSKR+7KRtCZVLINEGI2mWkkizS8NnKNEGI2PYDUcqeakYW2EGI2"
+      },
+      {
+        "name": "x-sz-sdk-version",
+        "value": "1.12.21"
+      }
+    ],
+    "post_data": {
+      "operationName": "isAffiliateHasNoImpressionCampaign",
+      "query": "\n      query isAffiliateHasNoImpressionCampaign {\n        isAffiliateHasNoImpressionCampaign {\n          hasNoImpressionsCampaign\n        }\n      }\n    "
+    },
+    "status": 200,
+    "response_headers": [
+      {
+        "name": "access-control-allow-credentials",
+        "value": "true"
+      },
+      {
+        "name": "access-control-allow-headers",
+        "value": "Content-Type"
+      },
+      {
+        "name": "access-control-allow-methods",
+        "value": "POST,GET,OPTIONS,PUT,DELETE,PATCH"
+      },
+      {
+        "name": "access-control-allow-origin",
+        "value": "https://shopee.co.th"
+      },
+      {
+        "name": "access-control-max-age",
+        "value": "86400"
+      },
+      {
+        "name": "content-length",
+        "value": "82"
+      },
+      {
+        "name": "content-security-policy",
+        "value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json; charset=utf-8"
+      },
+      {
+        "name": "date",
+        "value": "Thu, 16 Jul 2026 04:43:33 GMT"
+      },
+      {
+        "name": "expect-ct",
+        "value": "max-age=0"
+      },
+      {
+        "name": "referrer-policy",
+        "value": "no-referrer"
+      },
+      {
+        "name": "server",
+        "value": "SGW"
+      },
+      {
+        "name": "strict-transport-security",
+        "value": "max-age=15552000; includeSubDomains"
+      },
+      {
+        "name": "x-content-type-options",
+        "value": "nosniff"
+      },
+      {
+        "name": "x-dns-prefetch-control",
+        "value": "off"
+      },
+      {
+        "name": "x-download-options",
+        "value": "noopen"
+      },
+      {
+        "name": "x-frame-options",
+        "value": "SAMEORIGIN"
+      },
+      {
+        "name": "x-permitted-cross-domain-policies",
+        "value": "none"
+      },
+      {
+        "name": "x-request-id",
+        "value": "da88197b56b3151527a78685dee74300:010000ac5785b296:000000f2f2a6791a"
+      },
+      {
+        "name": "x-xss-protection",
+        "value": "0"
+      }
+    ],
+    "response_body_truncated": {
+      "data": {
+        "isAffiliateHasNoImpressionCampaign": {
+          "hasNoImpressionsCampaign": true
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "url": "https://affiliate.shopee.co.th/api/v3/gql?q=offerTabList",
+    "path": "/api/v3/gql",
+    "request_headers": [
+      {
+        "name": ":authority",
+        "value": "affiliate.shopee.co.th"
+      },
+      {
+        "name": ":method",
+        "value": "POST"
+      },
+      {
+        "name": ":path",
+        "value": "/api/v3/gql?q=offerTabList"
+      },
+      {
+        "name": ":scheme",
+        "value": "https"
+      },
+      {
+        "name": "accept",
+        "value": "application/json, text/plain, */*"
+      },
+      {
+        "name": "accept-encoding",
+        "value": "gzip, deflate, br, zstd"
+      },
+      {
+        "name": "accept-language",
+        "value": "en-US,en;q=0.9,th;q=0.8"
+      },
+      {
+        "name": "af-ac-enc-dat",
+        "value": "cf1fca7ce844c89d"
+      },
+      {
+        "name": "af-ac-enc-sz-token",
+        "value": "<SCRUBBED>"
+      },
+      {
+        "name": "affiliate-program-type",
+        "value": "1"
+      },
+      {
+        "name": "content-length",
+        "value": "200"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json; charset=UTF-8"
+      },
+      {
+        "name": "csrf-token",
+        "value": "<SCRUBBED>"
+      },
+      {
+        "name": "origin",
+        "value": "https://affiliate.shopee.co.th"
+      },
+      {
+        "name": "priority",
+        "value": "u=1, i"
+      },
+      {
+        "name": "referer",
+        "value": "https://affiliate.shopee.co.th/offer/product_offer"
+      },
+      {
+        "name": "sec-ch-ua",
+        "value": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\""
+      },
+      {
+        "name": "sec-ch-ua-mobile",
+        "value": "?0"
+      },
+      {
+        "name": "sec-ch-ua-platform",
+        "value": "\"macOS\""
+      },
+      {
+        "name": "sec-fetch-dest",
+        "value": "empty"
+      },
+      {
+        "name": "sec-fetch-mode",
+        "value": "cors"
+      },
+      {
+        "name": "sec-fetch-site",
+        "value": "same-origin"
+      },
+      {
+        "name": "user-agent",
+        "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      },
+      {
+        "name": "x-sap-ri",
+        "value": "7561586aa0ccc5c2e375a634050104b73d33b22bc43ee2e89391"
+      },
+      {
+        "name": "x-sap-sec",
+        "value": "PdGvxgSwUkS/8JYnWkonWJ+nEksaWoontkpCWJ4np9ovW40nY9sAWJyns9owWPYnPksfWs0nn9pBWJ0nIkpEWsSnk+ozWrqnCksWW4TnrksOWOonzipdW49nZ9pfWPknf9pxWJdn19oXWkYnjkp8WpdnFkslWOYn1ipIWP0nZ+s9WOqnPip7WkonQkknWkonWkS/h63cWkonIIMKYiGfW9onWkongFQwEFuvW9onUk4nWpZwAFSnWeyLgkknWkona+gmCkXnWksmRgYqWkon1ZT7GkonWSYqWkoxWionOvrDB9onWP2CW+on1k4nWkonLshhIsBoWkonoOQ6vq4IW+onWks0g8qtWkoQ4ip+FWufNrLIWsJsW9onWksSErouWkhvW+onWH9r6tywhM490O4PWkhMRvynWkh7gotJmyi910L+rZv4gpdWgKSodjaovAAiselJ27Rst4mWJWBQomv1MN8f+DKqnGKefz1LKL62OG9M5aC/xBU/UZwtjJlM/D081mjLK4ebhzQc+CD3HRUWbLszlt+3ICfzckdXTHtuAp+IibdE9lPMukmLK3ozImdcMLEfzz1IVeDuQ+CnSmueQsDe0uxxTV+G7vaMn4Txgg95xqKFN3SxKz4f/vAGLmWlLQDLsA7cXZjD0B1SK+fMC9TY58tSRkZC/2EU6y0upjqbI35fkbGLn0vF7I963uyIBBwRTaW4oZ1ITte5/Pgipf2aNAG6WkoWWkonM2hWh9jyNbyvWkonlHG0aKSnWkpZaiccXW0/htWlyY0E2cOdV+pQDybYYru5T+L6sTvswN8Xyltno4n1LvJ0E34Bn6NebwaNeLN3RHGSjQTOXqjv8ZFJmRYxJaG5SrW9IMqlbI4GpvyCFRQa3IV/Ils/iqyd8s5rDE5gluQtvwdboosqAW5tOTcBfcR2Mn9/kQCEpv8OUmAod8EOZ7m/VO9eIXtaxL27K8SLGbIQTZcse6KZT+onWk0nWkhJEgrq9ionWohBVd8vOCLA4ZkHWkonWkonWkong9onWeKTmPf5ItDBMLpRFaBYQtc0r5NYhbcH4HUsfNQvcUBXQhkPlnFqKw3CK5jt+vPhJuUsgXCgBUBiRsN+FYfYM2GVEm9mPpTnWkonWkonWkonF9onWHKSZND1dZOFQEjsTq3q3uCjsmwl5V9nWO0nWkst3BrqdYP6NutMn4Jg5CcnOe4diVnXs6Kn/fSxQq/sNHBhxX0nWkon1konWoc6tyeyQKeTPCSsiVxnhwxV/WkbQqOhNoJ0tTezQ338cZ0SfVWVhSZx3cRudbKpB6LKt4LYPsFtWkonWkqnWkh2xByjZLIw7+onWkonWkontionWH0Wdb5l6hBIUeEXAyhbRXHTZi0/KYS20T8KVBGHcb5LNTJvyIeblioWWkone7owxvW0IZ1WWkonU8d0CD03GMqnWkon"
+      },
+      {
+        "name": "x-sz-sdk-version",
+        "value": "1.12.21"
+      }
+    ],
+    "post_data": {
+      "operationName": "getOfferTabList",
+      "query": "\n    query getOfferTabList {\n      offerTabList {\n        listType\n        l1BeCatId\n        feCatId\n        name\n        image\n      }\n    }\n  "
+    },
+    "status": 200,
+    "response_headers": [
+      {
+        "name": "access-control-allow-credentials",
+        "value": "true"
+      },
+      {
+        "name": "access-control-allow-headers",
+        "value": "Content-Type"
+      },
+      {
+        "name": "access-control-allow-methods",
+        "value": "POST,GET,OPTIONS,PUT,DELETE,PATCH"
+      },
+      {
+        "name": "access-control-allow-origin",
+        "value": "https://shopee.co.th"
+      },
+      {
+        "name": "access-control-max-age",
+        "value": "86400"
+      },
+      {
+        "name": "content-encoding",
+        "value": "gzip"
+      },
+      {
+        "name": "content-security-policy",
+        "value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json; charset=utf-8"
+      },
+      {
+        "name": "date",
+        "value": "Thu, 16 Jul 2026 04:43:33 GMT"
+      },
+      {
+        "name": "expect-ct",
+        "value": "max-age=0"
+      },
+      {
+        "name": "referrer-policy",
+        "value": "no-referrer"
+      },
+      {
+        "name": "server",
+        "value": "SGW"
+      },
+      {
+        "name": "strict-transport-security",
+        "value": "max-age=15552000; includeSubDomains"
+      },
+      {
+        "name": "vary",
+        "value": "Accept-Encoding"
+      },
+      {
+        "name": "x-content-type-options",
+        "value": "nosniff"
+      },
+      {
+        "name": "x-dns-prefetch-control",
+        "value": "off"
+      },
+      {
+        "name": "x-download-options",
+        "value": "noopen"
+      },
+      {
+        "name": "x-frame-options",
+        "value": "SAMEORIGIN"
+      },
+      {
+        "name": "x-permitted-cross-domain-policies",
+        "value": "none"
+      },
+      {
+        "name": "x-request-id",
+        "value": "8d7cf3f356b3151727865adc7682bf00:010000a8c176cfc1:000000f2764694f8"
+      },
+      {
+        "name": "x-xss-protection",
+        "value": "0"
+      }
+    ],
+    "response_body_truncated": {
+      "data": {
+        "offerTabList": [
+          {
+            "listType": "0",
+            "l1BeCatId": null,
+            "feCatId": null,
+            "name": null,
+            "image": null
+          },
+          {
+            "listType": "7",
+            "l1BeCatId": null,
+            "feCatId": null,
+            "name": null,
+            "image": null
+          },
+          "... (6 more)"
+        ]
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "url": "https://affiliate.shopee.co.th/api/v3/offer/product/list?list_type=0&sort_type=1&page_offset=0&page_limit=20&client_type=1",
+    "path": "/api/v3/offer/product/list",
+    "request_headers": [
+      {
+        "name": ":authority",
+        "value": "affiliate.shopee.co.th"
+      },
+      {
+        "name": ":method",
+        "value": "GET"
+      },
+      {
+        "name": ":path",
+        "value": "/api/v3/offer/product/list?list_type=0&sort_type=1&page_offset=0&page_limit=20&client_type=1"
+      },
+      {
+        "name": ":scheme",
+        "value": "https"
+      },
+      {
+        "name": "accept",
+        "value": "application/json, text/plain, */*"
+      },
+      {
+        "name": "accept-encoding",
+        "value": "gzip, deflate, br, zstd"
+      },
+      {
+        "name": "accept-language",
+        "value": "en-US,en;q=0.9,th;q=0.8"
+      },
+      {
+        "name": "af-ac-enc-dat",
+        "value": "32b78f163c885f9f"
+      },
+      {
+        "name": "af-ac-enc-sz-token",
+        "value": "<SCRUBBED>"
+      },
+      {
+        "name": "affiliate-program-type",
+        "value": "1"
+      },
+      {
+        "name": "priority",
+        "value": "u=1, i"
+      },
+      {
+        "name": "referer",
+        "value": "https://affiliate.shopee.co.th/offer/product_offer"
+      },
+      {
+        "name": "sec-ch-ua",
+        "value": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\""
+      },
+      {
+        "name": "sec-ch-ua-mobile",
+        "value": "?0"
+      },
+      {
+        "name": "sec-ch-ua-platform",
+        "value": "\"macOS\""
+      },
+      {
+        "name": "sec-fetch-dest",
+        "value": "empty"
+      },
+      {
+        "name": "sec-fetch-mode",
+        "value": "cors"
+      },
+      {
+        "name": "sec-fetch-site",
+        "value": "same-origin"
+      },
+      {
+        "name": "user-agent",
+        "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      },
+      {
+        "name": "x-sap-ri",
+        "value": "7561586acd31b46cb9bee03f050195863f14b2fc06873d5f4995"
+      },
+      {
+        "name": "x-sap-sec",
+        "value": "YarurAwdyQw8YNHJwQbJwNAJRQbAwN6JTQZcw+VJNIZEwcrJZQaFw/6JtDZhw76JjQa0wN5JtlajwM6Jzla5wMVJTDbbwQNJCQahwB2J7DbMw3HJfQbaw+HJyQafw/RJgQZkw3AJ2Qb8wMbJADZuwQVJqQaVw/rJDDZAwcjJlQZPw36J+QajwQbJhQzJwQbJwQYUJIwvwQbJsRctQt/cwlbJwQbJZyBoSyVGwlbJfQjJwKGohauJw7inlQzJwQbJiPzJw/bYwQxI2AV5wQbJ919V9QbJwKV5wQbhwDbJEVJ3albJw+7cwIbJgQjJwQbJc2EI6+3FwQbJ4NB1WGrtwIbJwQxuZz6IwQaFoDbXtjVP6B3mw2O3wlbJwQxbOQb4wQZGwIbJw/TiNYyoAo9Nd2WCwQZW2YrJwQau3qV4jAmzMi+quu1yOcpq8JUGbDL5vqi50ByXSSktXjJuNgwcg+INR50zYoTJTm4CDxXf9Hl9FKnlMyyUST6RrsWpL2gD7jT675stCx7jQXQtU69zKH8CZKWXj4io8rHvxgzWqH4Weeb2g2f14nm1KSh+uU3VDvlVJJCmirCPWEFLynuu9On4PwJyNLFaXHoCHgnupZcCccy7S1QD94gpe1r0dzRQIjMHNDV1A1Z55R4BRxNqAvb6+8NtfixK5bwnXohn7C9DD3r9kYwUZ7jZvDDH5R6hRvG8qI/es+JyEVMnjL+mSTVUEinhuSxC/IbewQbJFfoq08gQItHPwQbJsGjJde2JwQaBTmThKWuo85mLKqgWKahcea+X3lZGhU2pFyekKY7dbnA3SoktfAfXtFIIUAbyk6e6Qbr17T1uN9wHo9tc9bSsnKIxe1tEeZsZ2pESFbTVENuzCJljGvacONGV/doMNPuFae3c35qkvS87Zz8sWQw9jh3WJJqFGsoaS8qhhKcAJctkzwC2ZybOURIiq6yOyozJkp1MrH/ps4wJwQbPwQbJUlSLjQNJwQxL+0L2ZPJ04K8u5DbJwQbJwQbJwBAJwQZUHxxVAfPJ2UKtMnj7nqLhBGZ50jRHE7gOQ3n4UIBsR/EuIETjxt3uK6eH7JXYeasOQ3leqcOsNExbBCidnuJ93qPuhP0rwQbJwQbJwQbJwcAJwQZeJaCoUDDEdxezdK43xnh9ouPULBjkwQb8wQbJESKj7lT0s2nP+pU+YBmLJteqPZ5O1ZQqE7OfpQk33u8HISDJwQbJwR6JwQx7MugBwDe64hBC435JveeXe1IjpDk03wW0BwmBwlEp5xMU5ZAkUZOjL7LT7DAE32ceB2ZcC8LcJlbJwQbewQbJxysas17uMKzJwQbJwQbJwdbJwQaD73BW2N/uhtRGSM2kupDoKLSoEHUZ2f3QxnvliIPmvQ6JwQxv/K8Xy9PUpl6JwQbyzRyWyAwyyIbJwQx="
+      },
+      {
+        "name": "x-sz-sdk-version",
+        "value": "1.12.21"
+      }
+    ],
+    "post_data": null,
+    "status": 200,
+    "response_headers": [
+      {
+        "name": "access-control-allow-credentials",
+        "value": "true"
+      },
+      {
+        "name": "access-control-allow-headers",
+        "value": "Content-Type"
+      },
+      {
+        "name": "access-control-allow-methods",
+        "value": "POST,GET,OPTIONS,PUT,DELETE,PATCH"
+      },
+      {
+        "name": "access-control-allow-origin",
+        "value": "https://shopee.co.th"
+      },
+      {
+        "name": "access-control-max-age",
+        "value": "86400"
+      },
+      {
+        "name": "content-encoding",
+        "value": "gzip"
+      },
+      {
+        "name": "content-security-policy",
+        "value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json; charset=utf-8"
+      },
+      {
+        "name": "csrf-token",
+        "value": "<SCRUBBED>"
+      },
+      {
+        "name": "date",
+        "value": "Thu, 16 Jul 2026 04:43:33 GMT"
+      },
+      {
+        "name": "expect-ct",
+        "value": "max-age=0"
+      },
+      {
+        "name": "referrer-policy",
+        "value": "no-referrer"
+      },
+      {
+        "name": "server",
+        "value": "SGW"
+      },
+      {
+        "name": "strict-transport-security",
+        "value": "max-age=15552000; includeSubDomains"
+      },
+      {
+        "name": "vary",
+        "value": "Accept-Encoding"
+      },
+      {
+        "name": "x-content-type-options",
+        "value": "nosniff"
+      },
+      {
+        "name": "x-dns-prefetch-control",
+        "value": "off"
+      },
+      {
+        "name": "x-download-options",
+        "value": "noopen"
+      },
+      {
+        "name": "x-frame-options",
+        "value": "SAMEORIGIN"
+      },
+      {
+        "name": "x-permitted-cross-domain-policies",
+        "value": "none"
+      },
+      {
+        "name": "x-request-id",
+        "value": "da88197b56b31519a82c108cab089500:010000d208f16bcc:000000bda7366233"
+      },
+      {
+        "name": "x-xss-protection",
+        "value": "0"
+      }
+    ],
+    "response_body_truncated": {
+      "code": 0,
+      "msg": "success",
+      "data": {
+        "list": [
+          {
+            "item_id": "29575918337",
+            "long_link": "https://shopee.co.th/universal-link/product/166913933/29575918337?<tracking-params-scrubbed>",
+            "product_link": "https://shopee.co.th/product/166913933/29575918337",
+            "is_free_sample": false,
+            "max_commission_rate": "0%",
+            "seller_commission_rate": "7%",
+            "default_commission_rate": "7%",
+            "batch_item_for_item_card_full": {
+              "itemid": "29575918337",
+              "shopid": "166913933",
+              "name": "Diymore ESP32-S3 บอร์ดพัฒนาบลูทูธ WIFI ขนาด 4.3 นิ้ว/5 นิ้วพร้อมหน้าจอสัมผัสแบบ capacitive ความละเอียดสูง IPS",
+              "label_ids": [
+                "1908622",
+                "700640027",
+                "... (21 more)"
+              ],
+              "image": "sg-11134201-7rcf2-m654h810q53i86",
+              "images": [
+                "sg-11134201-7rcf2-m654h810q53i86",
+                "sg-11134201-7rce1-m654h8obs1nv6e",
+                "... (7 more)"
+              ],
+              "currency": "THB",
+              "stock": 30894,
+              "status": 1,
+              "ctime": 1739344206,
+              "sold": 116,
+              "sold_text": "116",
+              "historical_sold": 153,
+              "historical_sold_text": "153",
+              "liked": false,
+              "liked_count": 54,
+              "view_count": "0",
+              "catid": 100644,
+              "brand": "",
+              "cmt_count": 20,
+              "flag": 196608,
+              "cb_option": 1,
+              "item_status": "normal",
+              "price": "102600000",
+              "price_min": "102600000",
+              "price_max": "211400000",
+              "price_min_before_discount": "141200000",
+              "price_max_before_discount": "291100000",
+              "hidden_price_display": "",
+              "price_before_discount": "141200000",
+              "has_lowest_price_guarantee": false,
+              "show_discount": 27,
+              "raw_discount": 27,
+              "discount": "27%",
+              "is_category_failed": false,
+              "size_chart": "",
+              "video_info_list": [
+                {
+                  "formats": [
+                    {
+                      "format": 1600323,
+                      "defn": "V540P",
+                      "profile": "MP4",
+                      "path": "api/v4/11110105/mms/sg-11110105-6kio0-mbdkvqxgkbc31e.default.mp4",
+                      "url": "https://down-bs-th.vod.susercontent.com/api/v4/11110105/mms/sg-11110105-6kio0-mbdkvqxgkbc31e.default.mp4",
+                      "width": 480,
+                      "height": 480
+                    }
+                  ],
+                  "video_id": "api/v4/11110105/mms/sg-11110105-6kio0-mbdkvqxgkbc31e.16000031750752005.mp4",
+                  "thumb_url": "sg-11110105-6kio0-mbdkvqxgkbc31e_cover",
+                  "duration": 38,
+                  "version": 2,
+                  "vid": "sg-11110105-6kio0-mbdkvqxgkbc31e",
+                  "default_format": {
+                    "format": 1600323,
+                    "defn": "V540P",
+                    "profile": "MP4",
+                    "path": "",
+                    "url": "https://mms.vod.susercontent.com/api/v4/11110105/mms/sg-11110105-6kio0-mbdkvqxgkbc31e.default.mp4",
+                    "width": 480,
+                    "height": 480
+                  }
+                }
+              ],
+              "tier_variations": [
+                {
+                  "options": [
+                    "4.3 นิ้ว / ไม่สัมผัส",
+                    "4.3 นิ้ว / พร้อมสัมผัส",
+                    "... (2 more)"
+                  ],
+                  "images": [
+                    "sg-11134201-7rcca-m654hdeev6fs28",
+                    "sg-11134201-7rceo-m654hdvm609626",
+                    "... (2 more)"
+                  ],
+                  "properties": [],
+                  "name": "วิธีการทํางาน",
+                  "type": 0
+                }
+              ],
+              "item_rating": {
+                "rating_count": [
+                  36,
+                  0,
+                  "... (4 more)"
+                ],
+                "rating_star": 4.944444444444445,
+                "rcount_with_context": 3,
+                "rcount_with_image": 2
+              },
+              "item_type": 0,
+              "reference_item_id": "",
+              "transparent_background_image": "",
+              "is_adult": false,
+              "badge_icon_type": 0,
+              "shopee_verified": false,
+              "is_official_shop": true,
+              "show_official_shop_label": true,
+              "show_shopee_verified_label": false,
+              "show_official_shop_label_in_title": true,
+              "is_cc_installment_payment_eligible": false,
+              "is_non_cc_installment_payment_eligible": false,
+              "coin_earn_label": "",
+              "show_free_shipping": false,
+              "preview_info": null,
+              "coin_info": null,
+              "exclusive_price_info": null,
+              "can_use_bundle_deal": true,
+              "bundle_deal_info": {
+                "bundle_deal_id": "476723183825704",
+                "bundle_deal_label": "ซื้อ 2 ชิ้น ลด 2%"
+              },
+              "is_group_buy_item": false,
+              "has_group_buy_stock": false,
+              "group_buy_info": null,
+              "welcome_package_type": 0,
+              "welcome_package_info": null,
+              "add_on_deal_info": null,
+              "can_use_wholesale": false,
+              "is_preferred_plus_seller": false,
+              "shop_location": "",
+              "has_model_with_available_shopee_stock": false,
+              "voucher_info": {
+                "promotion_id": "1436744470786048",
+                "voucher_code": "DIYM11023",
+                "label": "โค้ดลด ฿8"
+              },
+              "can_use_cod": true,
+              "is_on_flash_sale": false,
+              "spl_installment_tenure": 0,
+              "is_live_streaming_price": false,
+              "shop_name": "Diymore Official Store",
+              "shop_rating": 4.786401,
+              "deep_discount_skin": null,
+              "is_mart": false,
+              "pack_size": "",
+              "overlay_images": [],
+              "optimized_names": [],
+              "live_stream_session": null,
+              "bundle_deal_id": "476723183825704"
+            },
+            "trace": "{\"trace_id\":\"0.Tfz7x2StUt.100\",\"list_type\":100,\"exp_group_ids\":[601476],\"root_trace_id\":\"0.Tfz7x2StUt.100\",\"root_list_type\":100}",
+            "is_seller_invited": false,
+            "offer_card_type": 1,
+            "invited_campaign_offer_card": {
+              "shop_commission_rate": ""
+            },
+            "promotion_vouchers": [],
+            "is_refundable_sample": false
+          },
+          {
+            "item_id": "40904402222",
+            "long_link": "https://shopee.co.th/universal-link/product/166913933/40904402222?<tracking-params-scrubbed>",
+            "product_link": "https://shopee.co.th/product/166913933/40904402222",
+            "is_free_sample": false,
+            "max_commission_rate": "0%",
+            "seller_commission_rate": "5%",
+            "default_commission_rate": "5%",
+            "batch_item_for_item_card_full": {
+              "itemid": "40904402222",
+              "shopid": "166913933",
+              "name": "DIYMORE ESP32-S3 1.47 นิ้วบอร์ดพัฒนาหน้าจอ LCD Wifi บอร์ดพัฒนาบลูทูธ 172  320 ความละเอียด Dual Core โปรเซสเซอร์ Type C",
+              "label_ids": [
+                "298888364",
+                "1001365",
+                "... (24 more)"
+              ],
+              "image": "sg-11134201-7rate-maxzg3sn0leq31",
+              "images": [
+                "sg-11134201-7rate-maxzg3sn0leq31",
+                "sg-11134201-7ratz-maxzg49kg2mp8d",
+                "... (7 more)"
+              ],
+              "currency": "THB",
+              "stock": 19969,
+              "status": 1,
+              "ctime": 1749808205,
+              "sold": 2,
+              "sold_text": "2",
+              "historical_sold": 9,
+              "historical_sold_text": "9",
+              "liked": false,
+              "liked_count": 22,
+              "view_count": "0",
+              "catid": 100010,
+              "brand": "",
+              "cmt_count": 1,
+              "flag": 196608,
+              "cb_option": 1,
+              "item_status": "normal",
+              "price": "89500000",
+              "price_min": "89500000",
+              "price_max": "93900000",
+              "price_min_before_discount": "125000000",
+              "price_max_before_discount": "125000000",
+              "hidden_price_display": "",
+              "price_before_discount": "125000000",
+              "has_lowest_price_guarantee": false,
+              "show_discount": 28,
+              "raw_discount": 28,
+              "discount": "28%",
+              "is_category_failed": false,
+              "size_chart": "",
+              "video_info_list": [
+                {
+                  "formats": [
+                    {
+                      "format": 1600003,
+                      "defn": "V480P",
+                      "profile": "MP4",
+                      "path": "api/v4/11110105/mms/sg-11110105-6kioi-mcj0e45j5rza7f.16000031753259979.mp4",
+                      "url": "https://down-bs-th.vod.susercontent.com/api/v4/11110105/mms/sg-11110105-6kioi-mcj0e45j5rza7f.16000031753259979.mp4",
+                      "width": 480,
+                      "height": 480
+                    }
+                  ],
+                  "video_id": "api/v4/11110105/mms/sg-11110105-6kioi-mcj0e45j5rza7f.16000031753259979.mp4",
+                  "thumb_url": "sg-11110105-6kioi-mcj0e45j5rza7f_cover",
+                  "duration": 12,
+                  "version": 2,
+                  "vid": "sg-11110105-6kioi-mcj0e45j5rza7f",
+                  "default_format": {
+                    "format": 1600323,
+                    "defn": "V540P",
+                    "profile": "MP4",
+                    "path": "",
+                    "url": "https://mms.vod.susercontent.com/api/v4/11110105/mms/sg-11110105-6kioi-mcj0e45j5rza7f.default.mp4",
+                    "width": 480,
+                    "height": 480
+                  }
+                }
+              ],
+              "tier_variations": [
+                {
+                  "options": [
+                    "หัวพินไม่บัดกรี",
+                    "หัวแร้งบัดกรี"
+                  ],
+                  "images": [
+                    "sg-11134201-7raty-maxzg82ws8k0a2",
+                    "sg-11134201-7ratg-maxzg8ja2vkgad"
+                  ],
+                  "properties": [],
+                  "name": "สไตล์",
+                  "type": 0
+                }
+              ],
+              "item_rating": {
+                "rating_count": [
+                  10,
+                  0,
+                  "... (4 more)"
+                ],
+                "rating_star": 4.9,
+                "rcount_with_context": 3,
+                "rcount_with_image": 2
+              },
+              "item_type": 0,
+              "reference_item_id": "",
+              "transparent_background_image": "",
+              "is_adult": false,
+              "badge_icon_type": 0,
+              "shopee_verified": false,
+              "is_official_shop": true,
+              "show_official_shop_label": true,
+              "show_shopee_verified_label": false,
+              "show_official_shop_label_in_title": true,
+              "is_cc_installment_payment_eligible": false,
+              "is_non_cc_installment_payment_eligible": false,
+              "coin_earn_label": "",
+              "show_free_shipping": false,
+              "preview_info": null,
+              "coin_info": null,
+              "exclusive_price_info": null,
+              "can_use_bundle_deal": true,
+              "bundle_deal_info": {
+                "bundle_deal_id": "476723183825704",
+                "bundle_deal_label": "ซื้อ 2 ชิ้น ลด 2%"
+              },
+              "is_group_buy_item": false,
+              "has_group_buy_stock": false,
+              "group_buy_info": null,
+              "welcome_package_type": 0,
+              "welcome_package_info": null,
+              "add_on_deal_info": null,
+              "can_use_wholesale": false,
+              "is_preferred_plus_seller": false,
+              "shop_location": "",
+              "has_model_with_available_shopee_stock": false,
+              "voucher_info": {
+                "promotion_id": "1436744470786048",
+                "voucher_code": "DIYM11023",
+                "label": "โค้ดลด ฿8"
+              },
+              "can_use_cod": true,
+              "is_on_flash_sale": false,
+              "spl_installment_tenure": 0,
+              "is_live_streaming_price": false,
+              "shop_name": "Diymore Official Store",
+              "shop_rating": 4.786401,
+              "deep_discount_skin": null,
+              "is_mart": false,
+              "pack_size": "",
+              "overlay_images": [],
+              "optimized_names": [],
+              "live_stream_session": null,
+              "bundle_deal_id": "476723183825704"
+            },
+            "trace": "{\"trace_id\":\"0.Tfz7x2StUt.100\",\"list_type\":100,\"exp_group_ids\":[601476],\"root_trace_id\":\"0.Tfz7x2StUt.100\",\"root_list_type\":100}",
+            "is_seller_invited": false,
+            "offer_card_type": 1,
+            "invited_campaign_offer_card": {
+              "shop_commission_rate": ""
+            },
+            "promotion_vouchers": [],
+            "is_refundable_sample": false
+          },
+          "... (18 more)"
+        ],
+        "page_offset": 0,
+        "page_limit": 20,
+        "total_count": 500,
+        "trace": "{\"trace_id\":\"0.Tfz7x2StUt.100\",\"list_type\":100,\"exp_group_ids\":[601476],\"root_trace_id\":\"0.Tfz7x2StUt.100\",\"root_list_type\":100}"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "url": "https://analytics.google.com/g/collect?v=2&tid=G-LB1RXY1EGG&gtm=45je67e0v9116290625za20gzb77691473zd77691473&_p=1784176900894&_gaz=1&gcs=G1--&gcd=13l3l3l3l5l1&npa=0&dma=0&ecid=1621916250&_eu=AEAAAGQC&ae=a&are=1&cid=2037538952.1772415902&frm=0&pscdl=noapi&rcb=17&sr=1512x982&uaa=arm&uab=64&uafvl=Not%253BA%253DBrand%3B8.0.0.0%7CChromium%3B150.0.7871.49%7CGoogle%2520Chrome%3B150.0.7871.49&uam=&uamb=0&uap=macOS&uapv=26.5.2&uaw=0&ul=en-us&gaf=2&_s=3&tag_exp=115938465~115938468~118897920~118897930~119381663~119773332&dl=https%3A%2F%2Faffiliate.shopee.co.th%2Foffer%2Fproduct_offer&dr=https%3A%2F%2Faffiliate.shopee.co.th%2Fdashboard&sid=1784176901&sct=35&seg=1&dt=Shopee%20Affiliate%20Program%20%7C%20Shopee%20Thailand&en=page_view&_et=7531&tfd=113126",
+    "path": "/g/collect",
+    "request_headers": [
+      {
+        "name": ":authority",
+        "value": "analytics.google.com"
+      },
+      {
+        "name": ":method",
+        "value": "POST"
+      },
+      {
+        "name": ":path",
+        "value": "/g/collect?v=2&tid=G-LB1RXY1EGG&gtm=45je67e0v9116290625za20gzb77691473zd77691473&_p=1784176900894&_gaz=1&gcs=G1--&gcd=13l3l3l3l5l1&npa=0&dma=0&ecid=1621916250&_eu=AEAAAGQC&ae=a&are=1&cid=2037538952.1772415902&frm=0&pscdl=noapi&rcb=17&sr=1512x982&uaa=arm&uab=64&uafvl=Not%253BA%253DBrand%3B8.0.0.0%7CChromium%3B150.0.7871.49%7CGoogle%2520Chrome%3B150.0.7871.49&uam=&uamb=0&uap=macOS&uapv=26.5.2&uaw=0&ul=en-us&gaf=2&_s=3&tag_exp=115938465~115938468~118897920~118897930~119381663~119773332&dl=https%3A%2F%2Faffiliate.shopee.co.th%2Foffer%2Fproduct_offer&dr=https%3A%2F%2Faffiliate.shopee.co.th%2Fdashboard&sid=1784176901&sct=35&seg=1&dt=Shopee%20Affiliate%20Program%20%7C%20Shopee%20Thailand&en=page_view&_et=7531&tfd=113126"
+      },
+      {
+        "name": ":scheme",
+        "value": "https"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      },
+      {
+        "name": "accept-encoding",
+        "value": "gzip, deflate, br, zstd"
+      },
+      {
+        "name": "accept-language",
+        "value": "en-US,en;q=0.9,th;q=0.8"
+      },
+      {
+        "name": "cache-control",
+        "value": "no-cache"
+      },
+      {
+        "name": "content-length",
+        "value": "0"
+      },
+      {
+        "name": "origin",
+        "value": "https://affiliate.shopee.co.th"
+      },
+      {
+        "name": "pragma",
+        "value": "no-cache"
+      },
+      {
+        "name": "priority",
+        "value": "u=1, i"
+      },
+      {
+        "name": "referer",
+        "value": "https://affiliate.shopee.co.th/"
+      },
+      {
+        "name": "sec-ch-ua",
+        "value": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\""
+      },
+      {
+        "name": "sec-ch-ua-mobile",
+        "value": "?0"
+      },
+      {
+        "name": "sec-ch-ua-platform",
+        "value": "\"macOS\""
+      },
+      {
+        "name": "sec-fetch-dest",
+        "value": "empty"
+      },
+      {
+        "name": "sec-fetch-mode",
+        "value": "no-cors"
+      },
+      {
+        "name": "sec-fetch-site",
+        "value": "cross-site"
+      },
+      {
+        "name": "sec-fetch-storage-access",
+        "value": "active"
+      },
+      {
+        "name": "user-agent",
+        "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      },
+      {
+        "name": "x-browser-channel",
+        "value": "stable"
+      },
+      {
+        "name": "x-browser-copyright",
+        "value": "Copyright 2026 Google LLC. All Rights Reserved."
+      },
+      {
+        "name": "x-browser-validation",
+        "value": "5MjUasltyCilaSXJc+dGeIJWILk="
+      },
+      {
+        "name": "x-browser-year",
+        "value": "2026"
+      },
+      {
+        "name": "x-client-data",
+        "value": "CKmdygEIkqHLAQiGoM0B"
+      }
+    ],
+    "post_data": null,
+    "status": 204,
+    "response_headers": [
+      {
+        "name": "access-control-allow-credentials",
+        "value": "true"
+      },
+      {
+        "name": "access-control-allow-origin",
+        "value": "https://affiliate.shopee.co.th"
+      },
+      {
+        "name": "alt-svc",
+        "value": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+      },
+      {
+        "name": "cache-control",
+        "value": "no-cache, no-store, must-revalidate"
+      },
+      {
+        "name": "content-length",
+        "value": "0"
+      },
+      {
+        "name": "content-security-policy-report-only",
+        "value": "script-src 'none'; form-action 'none'; frame-src 'none'; report-uri https://csp.withgoogle.com/csp/scaffolding/ascnsrsggc:197:0"
+      },
+      {
+        "name": "content-type",
+        "value": "text/plain"
+      },
+      {
+        "name": "cross-origin-opener-policy-report-only",
+        "value": "same-origin; report-to=ascnsrsggc:197:0"
+      },
+      {
+        "name": "cross-origin-resource-policy",
+        "value": "cross-origin"
+      },
+      {
+        "name": "date",
+        "value": "Thu, 16 Jul 2026 04:43:34 GMT"
+      },
+      {
+        "name": "expires",
+        "value": "Fri, 01 Jan 1990 00:00:00 GMT"
+      },
+      {
+        "name": "pragma",
+        "value": "no-cache"
+      },
+      {
+        "name": "report-to",
+        "value": "{\"group\":\"ascnsrsggc:197:0\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://csp.withgoogle.com/csp/report-to/scaffolding/ascnsrsggc:197:0\"}],}"
+      },
+      {
+        "name": "server",
+        "value": "Golfe2"
+      }
+    ],
+    "response_body_truncated": null
+  },
+  {
+    "method": "POST",
+    "url": "https://monitor-report.affiliate.shopee.co.th/api/reportMetrics",
+    "path": "/api/reportMetrics",
+    "request_headers": [
+      {
+        "name": ":authority",
+        "value": "monitor-report.affiliate.shopee.co.th"
+      },
+      {
+        "name": ":method",
+        "value": "POST"
+      },
+      {
+        "name": ":path",
+        "value": "/api/reportMetrics"
+      },
+      {
+        "name": ":scheme",
+        "value": "https"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      },
+      {
+        "name": "accept-encoding",
+        "value": "gzip, deflate, br, zstd"
+      },
+      {
+        "name": "accept-language",
+        "value": "en-US,en;q=0.9,th;q=0.8"
+      },
+      {
+        "name": "content-length",
+        "value": "333"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "origin",
+        "value": "https://affiliate.shopee.co.th"
+      },
+      {
+        "name": "priority",
+        "value": "u=1, i"
+      },
+      {
+        "name": "referer",
+        "value": "https://affiliate.shopee.co.th/"
+      },
+      {
+        "name": "sec-ch-ua",
+        "value": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\""
+      },
+      {
+        "name": "sec-ch-ua-mobile",
+        "value": "?0"
+      },
+      {
+        "name": "sec-ch-ua-platform",
+        "value": "\"macOS\""
+      },
+      {
+        "name": "sec-fetch-dest",
+        "value": "empty"
+      },
+      {
+        "name": "sec-fetch-mode",
+        "value": "cors"
+      },
+      {
+        "name": "sec-fetch-site",
+        "value": "same-site"
+      },
+      {
+        "name": "user-agent",
+        "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      }
+    ],
+    "post_data": {
+      "action": "reportMetrics",
+      "key": "website",
+      "token": "ff356bed474d4fbabbe07d7f660fdfe9",
+      "uuid": "db2e1f95-8cb0-4bda-9bed-320b41fad056",
+      "userId": "12758106",
+      "tags": "{\"publish_version\":\"2026.07.07 19:04:09\",\"affiliate_id\":15381060030}",
+      "metrics": [
+        {
+          "page": "/offer/product_offer",
+          "metricItem": "page_render",
+          "status": "start",
+          "value": 1
+        }
+      ]
+    },
+    "status": 200,
+    "response_headers": [
+      {
+        "name": "access-control-allow-credentials",
+        "value": "true"
+      },
+      {
+        "name": "access-control-allow-origin",
+        "value": "https://affiliate.shopee.co.th"
+      },
+      {
+        "name": "access-control-expose-headers",
+        "value": "Authorization"
+      },
+      {
+        "name": "content-length",
+        "value": "80"
+      },
+      {
+        "name": "content-security-policy",
+        "value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json; charset=utf-8"
+      },
+      {
+        "name": "date",
+        "value": "Thu, 16 Jul 2026 04:43:34 GMT"
+      },
+      {
+        "name": "etag",
+        "value": "W/\"50-hu8jELqfX3XE8rzoMnwzQBTwT/Q\""
+      },
+      {
+        "name": "expect-ct",
+        "value": "max-age=0"
+      },
+      {
+        "name": "referrer-policy",
+        "value": "no-referrer"
+      },
+      {
+        "name": "retry-after",
+        "value": "9"
+      },
+      {
+        "name": "server",
+        "value": "SGW"
+      },
+      {
+        "name": "strict-transport-security",
+        "value": "max-age=15552000; includeSubDomains"
+      },
+      {
+        "name": "vary",
+        "value": "Origin"
+      },
+      {
+        "name": "x-content-type-options",
+        "value": "nosniff"
+      },
+      {
+        "name": "x-dns-prefetch-control",
+        "value": "off"
+      },
+      {
+        "name": "x-download-options",
+        "value": "noopen"
+      },
+      {
+        "name": "x-frame-options",
+        "value": "SAMEORIGIN"
+      },
+      {
+        "name": "x-permitted-cross-domain-policies",
+        "value": "none"
+      },
+      {
+        "name": "x-ratelimit-limit",
+        "value": "250"
+      },
+      {
+        "name": "x-request-id",
+        "value": "1b198f6256b315287518c5482c607100:010000ad366d19b0:000000226ffb2f51"
+      },
+      {
+        "name": "x-retry-remaining",
+        "value": "242"
+      },
+      {
+        "name": "x-retry-reset",
+        "value": "Thu, 16 Jul 2026 04:43:43 GMT"
+      },
+      {
+        "name": "x-xss-protection",
+        "value": "0"
+      }
+    ],
+    "response_body_truncated": {
+      "statusCode": 200,
+      "message": "Success",
+      "data": {
+        "code": 0,
+        "msg": "",
+        "errorData": []
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "url": "https://monitor-report.affiliate.shopee.co.th/api/reportLabels",
+    "path": "/api/reportLabels",
+    "request_headers": [
+      {
+        "name": ":authority",
+        "value": "monitor-report.affiliate.shopee.co.th"
+      },
+      {
+        "name": ":method",
+        "value": "POST"
+      },
+      {
+        "name": ":path",
+        "value": "/api/reportLabels"
+      },
+      {
+        "name": ":scheme",
+        "value": "https"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      },
+      {
+        "name": "accept-encoding",
+        "value": "gzip, deflate, br, zstd"
+      },
+      {
+        "name": "accept-language",
+        "value": "en-US,en;q=0.9,th;q=0.8"
+      },
+      {
+        "name": "content-length",
+        "value": "296"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "origin",
+        "value": "https://affiliate.shopee.co.th"
+      },
+      {
+        "name": "priority",
+        "value": "u=1, i"
+      },
+      {
+        "name": "referer",
+        "value": "https://affiliate.shopee.co.th/"
+      },
+      {
+        "name": "sec-ch-ua",
+        "value": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\""
+      },
+      {
+        "name": "sec-ch-ua-mobile",
+        "value": "?0"
+      },
+      {
+        "name": "sec-ch-ua-platform",
+        "value": "\"macOS\""
+      },
+      {
+        "name": "sec-fetch-dest",
+        "value": "empty"
+      },
+      {
+        "name": "sec-fetch-mode",
+        "value": "cors"
+      },
+      {
+        "name": "sec-fetch-site",
+        "value": "same-site"
+      },
+      {
+        "name": "user-agent",
+        "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      }
+    ],
+    "post_data": {
+      "action": "reportLabels",
+      "key": "website",
+      "token": "ff356bed474d4fbabbe07d7f660fdfe9",
+      "uuid": "db2e1f95-8cb0-4bda-9bed-320b41fad056",
+      "userId": "12758106",
+      "tags": "{\"publish_version\":\"2026.07.07 19:04:09\",\"affiliate_id\":15381060030}",
+      "labels": [
+        {
+          "label": "request_business_error_count",
+          "value": 2
+        }
+      ]
+    },
+    "status": 200,
+    "response_headers": [
+      {
+        "name": "access-control-allow-credentials",
+        "value": "true"
+      },
+      {
+        "name": "access-control-allow-origin",
+        "value": "https://affiliate.shopee.co.th"
+      },
+      {
+        "name": "access-control-expose-headers",
+        "value": "Authorization"
+      },
+      {
+        "name": "content-length",
+        "value": "80"
+      },
+      {
+        "name": "content-security-policy",
+        "value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json; charset=utf-8"
+      },
+      {
+        "name": "date",
+        "value": "Thu, 16 Jul 2026 04:43:34 GMT"
+      },
+      {
+        "name": "etag",
+        "value": "W/\"50-hu8jELqfX3XE8rzoMnwzQBTwT/Q\""
+      },
+      {
+        "name": "expect-ct",
+        "value": "max-age=0"
+      },
+      {
+        "name": "referrer-policy",
+        "value": "no-referrer"
+      },
+      {
+        "name": "retry-after",
+        "value": "5"
+      },
+      {
+        "name": "server",
+        "value": "SGW"
+      },
+      {
+        "name": "strict-transport-security",
+        "value": "max-age=15552000; includeSubDomains"
+      },
+      {
+        "name": "vary",
+        "value": "Origin"
+      },
+      {
+        "name": "x-content-type-options",
+        "value": "nosniff"
+      },
+      {
+        "name": "x-dns-prefetch-control",
+        "value": "off"
+      },
+      {
+        "name": "x-download-options",
+        "value": "noopen"
+      },
+      {
+        "name": "x-frame-options",
+        "value": "SAMEORIGIN"
+      },
+      {
+        "name": "x-permitted-cross-domain-policies",
+        "value": "none"
+      },
+      {
+        "name": "x-ratelimit-limit",
+        "value": "250"
+      },
+      {
+        "name": "x-request-id",
+        "value": "0b6f9b5e56b3152924f840dd805b8e00:0100008da132daea:0000000a28045e9a"
+      },
+      {
+        "name": "x-retry-remaining",
+        "value": "243"
+      },
+      {
+        "name": "x-retry-reset",
+        "value": "Thu, 16 Jul 2026 04:43:39 GMT"
+      },
+      {
+        "name": "x-xss-protection",
+        "value": "0"
+      }
+    ],
+    "response_body_truncated": {
+      "statusCode": 200,
+      "message": "Success",
+      "data": {
+        "code": 0,
+        "msg": "",
+        "errorData": []
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "url": "https://monitor-report.affiliate.shopee.co.th/api/reportLogs",
+    "path": "/api/reportLogs",
+    "request_headers": [
+      {
+        "name": ":authority",
+        "value": "monitor-report.affiliate.shopee.co.th"
+      },
+      {
+        "name": ":method",
+        "value": "POST"
+      },
+      {
+        "name": ":path",
+        "value": "/api/reportLogs"
+      },
+      {
+        "name": ":scheme",
+        "value": "https"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      },
+      {
+        "name": "accept-encoding",
+        "value": "gzip, deflate, br, zstd"
+      },
+      {
+        "name": "accept-language",
+        "value": "en-US,en;q=0.9,th;q=0.8"
+      },
+      {
+        "name": "content-length",
+        "value": "653"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "origin",
+        "value": "https://affiliate.shopee.co.th"
+      },
+      {
+        "name": "priority",
+        "value": "u=1, i"
+      },
+      {
+        "name": "referer",
+        "value": "https://affiliate.shopee.co.th/"
+      },
+      {
+        "name": "sec-ch-ua",
+        "value": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\""
+      },
+      {
+        "name": "sec-ch-ua-mobile",
+        "value": "?0"
+      },
+      {
+        "name": "sec-ch-ua-platform",
+        "value": "\"macOS\""
+      },
+      {
+        "name": "sec-fetch-dest",
+        "value": "empty"
+      },
+      {
+        "name": "sec-fetch-mode",
+        "value": "cors"
+      },
+      {
+        "name": "sec-fetch-site",
+        "value": "same-site"
+      },
+      {
+        "name": "user-agent",
+        "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      }
+    ],
+    "post_data": {
+      "action": "reportLogs",
+      "key": "website",
+      "token": "ff356bed474d4fbabbe07d7f660fdfe9",
+      "uuid": "db2e1f95-8cb0-4bda-9bed-320b41fad056",
+      "userId": "12758106",
+      "logs": [
+        "{\"portal\":\"normal\",\"label\":\"request_business_error_count\",\"url\":\"gql?q=isAffiliateHasNoImpressionCampaign\",\"path\":\"https://affiliate.shopee.co.th/offer/product_offer\",\"publish_version\":\"2026.07.07 19:04:09\",\"affiliate_id\":15381060030}",
+        "{\"portal\":\"normal\",\"label\":\"request_business_error_count\",\"url\":\"gql?q=offerTabList\",\"path\":\"https://affiliate.shopee.co.th/offer/product_offer\",\"publish_version\":\"2026.07.07 19:04:09\",\"affiliate_id\":15381060030}"
+      ]
+    },
+    "status": 200,
+    "response_headers": [
+      {
+        "name": "access-control-allow-credentials",
+        "value": "true"
+      },
+      {
+        "name": "access-control-allow-origin",
+        "value": "https://affiliate.shopee.co.th"
+      },
+      {
+        "name": "access-control-expose-headers",
+        "value": "Authorization"
+      },
+      {
+        "name": "content-length",
+        "value": "65"
+      },
+      {
+        "name": "content-security-policy",
+        "value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json; charset=utf-8"
+      },
+      {
+        "name": "date",
+        "value": "Thu, 16 Jul 2026 04:43:34 GMT"
+      },
+      {
+        "name": "etag",
+        "value": "W/\"41-cDR/ZaWRE0i+Pji+YtAcLwb8LqI\""
+      },
+      {
+        "name": "expect-ct",
+        "value": "max-age=0"
+      },
+      {
+        "name": "referrer-policy",
+        "value": "no-referrer"
+      },
+      {
+        "name": "retry-after",
+        "value": "5"
+      },
+      {
+        "name": "server",
+        "value": "SGW"
+      },
+      {
+        "name": "strict-transport-security",
+        "value": "max-age=15552000; includeSubDomains"
+      },
+      {
+        "name": "vary",
+        "value": "Origin"
+      },
+      {
+        "name": "x-content-type-options",
+        "value": "nosniff"
+      },
+      {
+        "name": "x-dns-prefetch-control",
+        "value": "off"
+      },
+      {
+        "name": "x-download-options",
+        "value": "noopen"
+      },
+      {
+        "name": "x-frame-options",
+        "value": "SAMEORIGIN"
+      },
+      {
+        "name": "x-permitted-cross-domain-policies",
+        "value": "none"
+      },
+      {
+        "name": "x-ratelimit-limit",
+        "value": "250"
+      },
+      {
+        "name": "x-request-id",
+        "value": "fca47c6256b3152924603bd1b0092b00:010000ed420bdf9a:00000047779a7d99"
+      },
+      {
+        "name": "x-retry-remaining",
+        "value": "242"
+      },
+      {
+        "name": "x-retry-reset",
+        "value": "Thu, 16 Jul 2026 04:43:39 GMT"
+      },
+      {
+        "name": "x-xss-protection",
+        "value": "0"
+      }
+    ],
+    "response_body_truncated": {
+      "statusCode": 200,
+      "message": "Success",
+      "data": {
+        "code": 0,
+        "msg": ""
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "url": "https://affiliate.shopee.co.th/api/v3/offer/product/list?list_type=0&keyword=%E0%B8%AB%E0%B8%B9%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%9A%E0%B8%A5%E0%B8%B9%E0%B8%97%E0%B8%B9%E0%B8%98&sort_type=1&page_offset=0&page_limit=20&client_type=1",
+    "path": "/api/v3/offer/product/list",
+    "request_headers": [
+      {
+        "name": ":authority",
+        "value": "affiliate.shopee.co.th"
+      },
+      {
+        "name": ":method",
+        "value": "GET"
+      },
+      {
+        "name": ":path",
+        "value": "/api/v3/offer/product/list?list_type=0&keyword=%E0%B8%AB%E0%B8%B9%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%9A%E0%B8%A5%E0%B8%B9%E0%B8%97%E0%B8%B9%E0%B8%98&sort_type=1&page_offset=0&page_limit=20&client_type=1"
+      },
+      {
+        "name": ":scheme",
+        "value": "https"
+      },
+      {
+        "name": "accept",
+        "value": "application/json, text/plain, */*"
+      },
+      {
+        "name": "accept-encoding",
+        "value": "gzip, deflate, br, zstd"
+      },
+      {
+        "name": "accept-language",
+        "value": "en-US,en;q=0.9,th;q=0.8"
+      },
+      {
+        "name": "af-ac-enc-dat",
+        "value": "cf833427c1b01fa8"
+      },
+      {
+        "name": "af-ac-enc-sz-token",
+        "value": "<SCRUBBED>"
+      },
+      {
+        "name": "affiliate-program-type",
+        "value": "1"
+      },
+      {
+        "name": "priority",
+        "value": "u=1, i"
+      },
+      {
+        "name": "referer",
+        "value": "https://affiliate.shopee.co.th/offer/product_offer"
+      },
+      {
+        "name": "sec-ch-ua",
+        "value": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\""
+      },
+      {
+        "name": "sec-ch-ua-mobile",
+        "value": "?0"
+      },
+      {
+        "name": "sec-ch-ua-platform",
+        "value": "\"macOS\""
+      },
+      {
+        "name": "sec-fetch-dest",
+        "value": "empty"
+      },
+      {
+        "name": "sec-fetch-mode",
+        "value": "cors"
+      },
+      {
+        "name": "sec-fetch-site",
+        "value": "same-origin"
+      },
+      {
+        "name": "user-agent",
+        "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      },
+      {
+        "name": "x-sap-ri",
+        "value": "7961586ae31b19765194e33e050178343edc9d425c6b36f443cc"
+      },
+      {
+        "name": "x-sap-sec",
+        "value": "2UePIFrCZyrHggzufy5ufg6u/y5WfyzuXy49fb2umyJzflzua445fmRuUTJ8flAuM4JZfa5uGy4wfgpu2d5VfiRuqdJDfgwuKd5CfmzuMyJjfxRuCd4NfgRuQy4Hfy5u+T5lfzAunyJXfiuuNyJrfl5uA44cfiVuUd4jfmHuWd4bfg2uad43fy5ukyHufy5ufyOJvPTwfy5u93zeP/Owfd5ufy5uRxi1DxbRfd5uwypufi21/pzuflBEbyHufy5uKpRufy4ufy4viFRtfy5usDO5ty5ufYRtfy5Af45uDJQou45ufCawfT5uYypufy5ubM/TcdP+fy5uvLi4ojX5fT5ufy4rRmAqfyIeXTJprGety0bMfgWjfd5ufy4Rqd5nfyJRfT5ufyI0YfB1ibxYb7ZVfy56iCwufyIwQZTpr4Y+zr02hvSgCpaxL2JyyRZpuNBpTPU+3Kkq8ef2iiNmggoIvxR0dsoqRzEjS8v2WbCJE09Q22MONyPi3QvjwHuTPDVDm/35fjreAWsn+U7NgUrrnJ4X8W+Rv1KQmQtJPl1UM0nhfzvkfjZ69SJoQcb3jH+N7FLu1xudoO0K0Yy0eHZFkA9HFsIeOF/EeJwfH8EMe7Ge/PvPExJkj09LodMwcHSx6eTRDjYk34SbddWVpyUcFOeXL0iIKsikbfc4X08bHGk9cCYAV67z8py63AV+hP/EbZQZx3eWTGn8QaoxUgjtEvl3cVPUo45Xfy5uNYsqvlBMsIAVfy5ueXh90HXufy4aFIpabJYRL/eweK2iJmQnhgO0YdA5Afb3LeoyODpSq0JFCST60v7dBsUy2b8lMxYteHyqNkWRdHWKmqyxjyKHcJTaFB2ar3jYpfaVEFSz9X+wWm+rsIub+W++kUm8eVrLKVKLUmZ7ifKCdT7vNyoZIUCta8tEQjSS+9PAhB5HErnJa72IPqeZgLx3usF2VbDb6KbGYNFgrLrufy5Vfy5uwqTL64uufy4gw6IEwOTsiirH+d5ufy5ufy5ufi6ufy5JTG8C8g9RV5YeI3V41A+2YjvBHkzRCjwnZKmMuJj0Xy1HMGYuYDdGic/Kplr9GNknZKt0vQX0AT72Je1S1TSfzWBx/fY2fy5ufy5ufy5ufz6ufy5FvwF3uF579dVNrU0JYFkfW8BYE8N0fy5Hfy5uTIhDpJ4kxy9twSfJxMdpgrVSQs2Knf6CTQMA7F9Jt4uAUpG+fy5ufmAufy4yC1v5ZF1eiXi/Nn23qO4gADcD7c9ktdqiGan5ZmVLjdjh+sw0ufp8jQsgpc5Qty6FG7WkaWY5gd5ufy5Xfy5ut2et36ajFmbufy5ufy5ufzbufyJb7Qlc3+bGZrm32D50U4VKiN63LaeFV3R8wH8TKKjufyAufy4Im3xlfX9bbdAufy4Sam5/ZJp7x45ufyI="
+      },
+      {
+        "name": "x-sz-sdk-version",
+        "value": "1.12.21"
+      }
+    ],
+    "post_data": null,
+    "status": 200,
+    "response_headers": [
+      {
+        "name": "access-control-allow-credentials",
+        "value": "true"
+      },
+      {
+        "name": "access-control-allow-headers",
+        "value": "Content-Type"
+      },
+      {
+        "name": "access-control-allow-methods",
+        "value": "POST,GET,OPTIONS,PUT,DELETE,PATCH"
+      },
+      {
+        "name": "access-control-allow-origin",
+        "value": "https://shopee.co.th"
+      },
+      {
+        "name": "access-control-max-age",
+        "value": "86400"
+      },
+      {
+        "name": "content-encoding",
+        "value": "gzip"
+      },
+      {
+        "name": "content-security-policy",
+        "value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json; charset=utf-8"
+      },
+      {
+        "name": "csrf-token",
+        "value": "<SCRUBBED>"
+      },
+      {
+        "name": "date",
+        "value": "Thu, 16 Jul 2026 04:43:39 GMT"
+      },
+      {
+        "name": "expect-ct",
+        "value": "max-age=0"
+      },
+      {
+        "name": "referrer-policy",
+        "value": "no-referrer"
+      },
+      {
+        "name": "server",
+        "value": "SGW"
+      },
+      {
+        "name": "strict-transport-security",
+        "value": "max-age=15552000; includeSubDomains"
+      },
+      {
+        "name": "vary",
+        "value": "Accept-Encoding"
+      },
+      {
+        "name": "x-content-type-options",
+        "value": "nosniff"
+      },
+      {
+        "name": "x-dns-prefetch-control",
+        "value": "off"
+      },
+      {
+        "name": "x-download-options",
+        "value": "noopen"
+      },
+      {
+        "name": "x-frame-options",
+        "value": "SAMEORIGIN"
+      },
+      {
+        "name": "x-permitted-cross-domain-policies",
+        "value": "none"
+      },
+      {
+        "name": "x-request-id",
+        "value": "da88197b56b31560254b92f561ad6c00:01000025e94cd748:00000019b81fdea0"
+      },
+      {
+        "name": "x-xss-protection",
+        "value": "0"
+      }
+    ],
+    "response_body_truncated": {
+      "code": 0,
+      "msg": "success",
+      "data": {
+        "list": [
+          {
+            "item_id": "26056286706",
+            "long_link": "https://shopee.co.th/universal-link/product/854443663/26056286706?<tracking-params-scrubbed>",
+            "product_link": "https://shopee.co.th/product/854443663/26056286706",
+            "is_free_sample": false,
+            "max_commission_rate": "0%",
+            "seller_commission_rate": "12%",
+            "default_commission_rate": "12%",
+            "batch_item_for_item_card_full": {
+              "itemid": "26056286706",
+              "shopid": "854443663",
+              "name": "Erazer XF22 หูฟังไร้สาย Bone Conduction แบบคล้องหู หูฟังกีฬา ระดับการกันน้ำ IPX5 บลูทูธ 5.4 หูฟังกีฬา Touch Control หูฟังสเตอริโอ HiFi หูฟังแบตอึด หูฟังกีฬากันน้ํา หูฟังไร้สาย Bluetooth earphone",
+              "label_ids": [
+                "844931086908638",
+                "844931064601283",
+                "... (28 more)"
+              ],
+              "image": "cn-11134207-820l4-mneavz5o83k573",
+              "images": [
+                "cn-11134207-820l4-mneavz5o83k573",
+                "cn-11134207-820l4-mofcwn5z1w5rbc",
+                "... (7 more)"
+              ],
+              "currency": "THB",
+              "stock": 300,
+              "status": 1,
+              "ctime": 1721817071,
+              "sold": 113,
+              "sold_text": "113",
+              "historical_sold": 3000,
+              "historical_sold_text": "3พัน+",
+              "liked": false,
+              "liked_count": 1341,
+              "view_count": "0",
+              "catid": 100535,
+              "brand": "",
+              "cmt_count": 1632,
+              "flag": 196608,
+              "cb_option": 0,
+              "item_status": "normal",
+              "price": "38900000",
+              "price_min": "38900000",
+              "price_max": "45000000",
+              "price_min_before_discount": "58100000",
+              "price_max_before_discount": "80800000",
+              "hidden_price_display": "",
+              "price_before_discount": "58100000",
+              "has_lowest_price_guarantee": false,
+              "show_discount": 44,
+              "raw_discount": 44,
+              "discount": "44%",
+              "is_category_failed": false,
+              "size_chart": "",
+              "video_info_list": [
+                {
+                  "formats": [
+                    {
+                      "format": 1600323,
+                      "defn": "V540P",
+                      "profile": "MP4",
+                      "path": "api/v4/11110105/mms/sg-11110105-6khxb-m0dw2ge448kl44.default.mp4",
+                      "url": "https://down-aka-th.vod.susercontent.com/api/v4/11110105/mms/sg-11110105-6khxb-m0dw2ge448kl44.default.mp4",
+                      "width": 480,
+                      "height": 854
+                    }
+                  ],
+                  "video_id": "api/v4/11110105/mms/sg-11110105-6khxb-m0dw2ge448kl44.16000081726799161.mp4",
+                  "thumb_url": "sg-11110105-7rdvz-m0dw2ptqblov9d",
+                  "duration": 34,
+                  "version": 2,
+                  "vid": "sg-11110105-6khxb-m0dw2ge448kl44",
+                  "default_format": {
+                    "format": 1600323,
+                    "defn": "V540P",
+                    "profile": "MP4",
+                    "path": "",
+                    "url": "https://mms.vod.susercontent.com/api/v4/11110105/mms/sg-11110105-6khxb-m0dw2ge448kl44.default.mp4",
+                    "width": 480,
+                    "height": 854
+                  }
+                }
+              ],
+              "tier_variations": [
+                {
+                  "options": [
+                    "สีดํา",
+                    "สีขาว",
+                    "... (1 more)"
+                  ],
+                  "images": [
+                    "cn-11134207-820l4-mofcxt6kg7wvad",
+                    "cn-11134207-820l4-mofcxxt9lqtpd8",
+                    "... (1 more)"
+                  ],
+                  "properties": [],
+                  "name": "สี",
+                  "type": 0
+                }
+              ],
+              "item_rating": {
+                "rating_count": [
+                  2378,
+                  50,
+                  "... (4 more)"
+                ],
+                "rating_star": 4.749369217830109,
+                "rcount_with_context": 705,
+                "rcount_with_image": 527
+              },
+              "item_type": 0,
+              "reference_item_id": "",
+              "transparent_background_image": "sg-11134252-7rdxb-m1ifs2hu8m2n65",
+              "is_adult": false,
+              "badge_icon_type": 0,
+              "shopee_verified": true,
+              "is_official_shop": false,
+              "show_official_shop_label": false,
+              "show_shopee_verified_label": true,
+              "show_official_shop_label_in_title": false,
+              "is_cc_installment_payment_eligible": false,
+              "is_non_cc_installment_payment_eligible": false,
+              "coin_earn_label": "",
+              "show_free_shipping": false,
+              "preview_info": null,
+              "coin_info": null,
+              "exclusive_price_info": null,
+              "can_use_bundle_deal": false,
+              "bundle_deal_info": null,
+              "is_group_buy_item": false,
+              "has_group_buy_stock": false,
+              "group_buy_info": null,
+              "welcome_package_type": 0,
+              "welcome_package_info": null,
+              "add_on_deal_info": null,
+              "can_use_wholesale": false,
+              "is_preferred_plus_seller": false,
+              "shop_location": "",
+              "has_model_with_available_shopee_stock": true,
+              "voucher_info": {
+                "promotion_id": "1435335008481280",
+                "voucher_code": "TOPMFACVB",
+                "label": "โค้ดลด ฿10"
+              },
+              "can_use_cod": true,
+              "is_on_flash_sale": true,
+              "spl_installment_tenure": 0,
+              "is_live_streaming_price": false,
+              "shop_name": "Lenovo thinkplus Audio Store",
+              "shop_rating": 4.781347,
+              "deep_discount_skin": null,
+              "is_mart": false,
+              "pack_size": "",
+              "overlay_images": [],
+              "optimized_names": [],
+              "live_stream_session": null,
+              "bundle_deal_id": "0"
+            },
+            "trace": "{\"trace_id\":\"0.ZjumpvS7T5.200\",\"list_type\":200,\"exp_group_ids\":[686365,686678,674095,685201,677035],\"root_trace_id\":\"0.ZjumpvS7T5.200\",\"root_list_type\":200}",
+            "is_seller_invited": false,
+            "offer_card_type": 0,
+            "invited_campaign_offer_card": {
+              "shop_commission_rate": ""
+            },
+            "promotion_vouchers": [],
+            "is_refundable_sample": false
+          },
+          {
+            "item_id": "28884751403",
+            "long_link": "https://shopee.co.th/universal-link/product/854443663/28884751403?<tracking-params-scrubbed>",
+            "product_link": "https://shopee.co.th/product/854443663/28884751403",
+            "is_free_sample": false,
+            "max_commission_rate": "0%",
+            "seller_commission_rate": "11%",
+            "default_commission_rate": "11%",
+            "batch_item_for_item_card_full": {
+              "itemid": "28884751403",
+              "shopid": "854443663",
+              "name": "ERAZER XF36 หูฟังนักแปล หูฟังแบบหนีบหู AI bluetooth 6.0 หูฟังนักแปล บลูทูธไร้สาย หูฟัง AI หูฟังแปลภาษา แปลภาษาได้ 135 ภาษา IPX5 หูฟัง หูฟังบลูทูธ  ไฮไฟสเตอริโอ การโทรแบบ HD หูฟังไร้สาย",
+              "label_ids": [
+                "1908622",
+                "700640027",
+                "... (25 more)"
+              ],
+              "image": "cn-11134207-820l4-mnear6t0ipz90a",
+              "images": [
+                "cn-11134207-820l4-mnear6t0ipz90a",
+                "cn-11134207-820l4-mofdsf83tm2x47",
+                "... (7 more)"
+              ],
+              "currency": "THB",
+              "stock": 1800,
+              "status": 1,
+              "ctime": 1745484688,
+              "sold": 270,
+              "sold_text": "270",
+              "historical_sold": 3000,
+              "historical_sold_text": "3พัน+",
+              "liked": false,
+              "liked_count": 1457,
+              "view_count": "0",
+              "catid": 100535,
+              "brand": "",
+              "cmt_count": 1184,
+              "flag": 196608,
+              "cb_option": 0,
+              "item_status": "normal",
+              "price": "33900000",
+              "price_min": "33900000",
+              "price_max": "45900000",
+              "price_min_before_discount": "74800000",
+              "price_max_before_discount": "138700000",
+              "hidden_price_display": "",
+              "price_before_discount": "74800000",
+              "has_lowest_price_guarantee": false,
+              "show_discount": 67,
+              "raw_discount": 67,
+              "discount": "67%",
+              "is_category_failed": false,
+              "size_chart": "",
+              "video_info_list": [
+                {
+                  "formats": [
+                    {
+                      "format": 1600325,
+                      "defn": "V720P",
+                      "profile": "MP4",
+                      "path": "api/v4/11110105/mms/th-11110105-6kgch-m96uzddzbfc00f.16003251747155911.mp4",
+                      "url": "https://down-aka-th.vod.susercontent.com/api/v4/11110105/mms/th-11110105-6kgch-m96uzddzbfc00f.16003251747155911.mp4",
+                      "width": 720,
+                      "height": 1280
+                    }
+                  ],
+                  "video_id": "api/v4/11110105/mms/th-11110105-6kgch-m96uzddzbfc00f.16000081745986764.mp4",
+                  "thumb_url": "th-11110105-6kgch-m96uzddzbfc00f_cover",
+                  "duration": 57,
+                  "version": 2,
+                  "vid": "th-11110105-6kgch-m96uzddzbfc00f",
+                  "default_format": {
+                    "format": 1600323,
+                    "defn": "V540P",
+                    "profile": "MP4",
+                    "path": "",
+                    "url": "https://mms.vod.susercontent.com/api/v4/11110105/mms/th-11110105-6kgch-m96uzddzbfc00f.default.mp4",
+                    "width": 540,
+                    "height": 960
+                  }
+                }
+              ],
+              "tier_variations": [
+                {
+                  "options": [
+                    "AI สีดํา (แปล)",
+                    "AI สีม่วง (แปล)",
+                    "... (16 more)"
+                  ],
+                  "images": [
+                    "cn-11134207-7ras8-mdgdgu1mhtrn82",
+                    "cn-11134207-7ras8-mdgdgwuwdmkk26",
+                    "... (16 more)"
+                  ],
+                  "properties": [],
+                  "name": "Loại",
+                  "type": 0
+                }
+              ],
+              "item_rating": {
+                "rating_count": [
+                  2231,
+                  29,
+                  "... (4 more)"
+                ],
+                "rating_star": 4.831017480950247,
+                "rcount_with_context": 781,
+                "rcount_with_image": 630
+              },
+              "item_type": 0,
+              "reference_item_id": "",
+              "transparent_background_image": "sg-11134252-821du-mgn9luk3mpzd20",
+              "is_adult": false,
+              "badge_icon_type": 0,
+              "shopee_verified": true,
+              "is_official_shop": false,
+              "show_official_shop_label": false,
+              "show_shopee_verified_label": true,
+              "show_official_shop_label_in_title": false,
+              "is_cc_installment_payment_eligible": false,
+              "is_non_cc_installment_payment_eligible": false,
+              "coin_earn_label": "",
+              "show_free_shipping": false,
+              "preview_info": null,
+              "coin_info": null,
+              "exclusive_price_info": null,
+              "can_use_bundle_deal": false,
+              "bundle_deal_info": null,
+              "is_group_buy_item": false,
+              "has_group_buy_stock": false,
+              "group_buy_info": null,
+              "welcome_package_type": 0,
+              "welcome_package_info": null,
+              "add_on_deal_info": null,
+              "can_use_wholesale": false,
+              "is_preferred_plus_seller": false,
+              "shop_location": "",
+              "has_model_with_available_shopee_stock": false,
+              "voucher_info": {
+                "promotion_id": "1435335008481280",
+                "voucher_code": "TOPMFACVB",
+                "label": "โค้ดลด ฿10"
+              },
+              "can_use_cod": true,
+              "is_on_flash_sale": true,
+              "spl_installment_tenure": 0,
+              "is_live_streaming_price": false,
+              "shop_name": "Lenovo thinkplus Audio Store",
+              "shop_rating": 4.781347,
+              "deep_discount_skin": null,
+              "is_mart": false,
+              "pack_size": "",
+              "overlay_images": [],
+              "optimized_names": [],
+              "live_stream_session": null,
+              "bundle_deal_id": "0"
+            },
+            "trace": "{\"trace_id\":\"0.ZjumpvS7T5.200\",\"list_type\":200,\"exp_group_ids\":[686365,686678,674095,685201,677035],\"root_trace_id\":\"0.ZjumpvS7T5.200\",\"root_list_type\":200}",
+            "is_seller_invited": false,
+            "offer_card_type": 0,
+            "invited_campaign_offer_card": {
+              "shop_commission_rate": ""
+            },
+            "promotion_vouchers": [],
+            "is_refundable_sample": false
+          },
+          "... (18 more)"
+        ],
+        "page_offset": 0,
+        "page_limit": 20,
+        "total_count": 500,
+        "trace": "{\"trace_id\":\"0.ZjumpvS7T5.200\",\"list_type\":200,\"exp_group_ids\":[686365,686678,674095,685201,677035],\"root_trace_id\":\"0.ZjumpvS7T5.200\",\"root_list_type\":200}"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "url": "https://affiliate.shopee.co.th/version.json?t=1784177021909",
+    "path": "/version.json",
+    "request_headers": [
+      {
+        "name": ":authority",
+        "value": "affiliate.shopee.co.th"
+      },
+      {
+        "name": ":method",
+        "value": "GET"
+      },
+      {
+        "name": ":path",
+        "value": "/version.json?t=1784177021909"
+      },
+      {
+        "name": ":scheme",
+        "value": "https"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      },
+      {
+        "name": "accept-encoding",
+        "value": "gzip, deflate, br, zstd"
+      },
+      {
+        "name": "accept-language",
+        "value": "en-US,en;q=0.9,th;q=0.8"
+      },
+      {
+        "name": "cache-control",
+        "value": "no-cache"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "pragma",
+        "value": "no-cache"
+      },
+      {
+        "name": "priority",
+        "value": "u=1, i"
+      },
+      {
+        "name": "referer",
+        "value": "https://affiliate.shopee.co.th/offer/product_offer"
+      },
+      {
+        "name": "sec-ch-ua",
+        "value": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\""
+      },
+      {
+        "name": "sec-ch-ua-mobile",
+        "value": "?0"
+      },
+      {
+        "name": "sec-ch-ua-platform",
+        "value": "\"macOS\""
+      },
+      {
+        "name": "sec-fetch-dest",
+        "value": "empty"
+      },
+      {
+        "name": "sec-fetch-mode",
+        "value": "cors"
+      },
+      {
+        "name": "sec-fetch-site",
+        "value": "same-origin"
+      },
+      {
+        "name": "user-agent",
+        "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      }
+    ],
+    "post_data": null,
+    "status": 200,
+    "response_headers": [
+      {
+        "name": "cache-control",
+        "value": "no-cache, no-store"
+      },
+      {
+        "name": "content-length",
+        "value": "53"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "date",
+        "value": "Thu, 16 Jul 2026 04:43:42 GMT"
+      },
+      {
+        "name": "etag",
+        "value": "\"8d7a8cf706159855b5dfa64efc1e3ad0\""
+      },
+      {
+        "name": "last-modified",
+        "value": "Tue, 07 Jul 2026 11:05:08 GMT"
+      },
+      {
+        "name": "originalmd5",
+        "value": "8d7a8cf706159855b5dfa64efc1e3ad0"
+      },
+      {
+        "name": "server",
+        "value": "SGW"
+      },
+      {
+        "name": "x-cache-status",
+        "value": "HIT"
+      },
+      {
+        "name": "x-cdn",
+        "value": "staticcache"
+      },
+      {
+        "name": "x-origin",
+        "value": "uss"
+      },
+      {
+        "name": "x-ratelimit-limit",
+        "value": "1666.6666666667"
+      },
+      {
+        "name": "x-ratelimit-remaining",
+        "value": "1647.6666666667"
+      },
+      {
+        "name": "x-request-id",
+        "value": "79e00cd9-a02a-4ae9-9548-ba105bee1107"
+      },
+      {
+        "name": "x-uri",
+        "value": "/shopee-affiliate-live-th/version.json"
+      },
+      {
+        "name": "x-via",
+        "value": "69.3"
+      }
+    ],
+    "response_body_truncated": {
+      "gitTag": "tag-feature-release-20260707-184257"
+    }
+  },
+  {
+    "method": "GET",
+    "url": "https://affiliate.shopee.co.th/version.json?t=1784177051910",
+    "path": "/version.json",
+    "request_headers": [
+      {
+        "name": ":authority",
+        "value": "affiliate.shopee.co.th"
+      },
+      {
+        "name": ":method",
+        "value": "GET"
+      },
+      {
+        "name": ":path",
+        "value": "/version.json?t=1784177051910"
+      },
+      {
+        "name": ":scheme",
+        "value": "https"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      },
+      {
+        "name": "accept-encoding",
+        "value": "gzip, deflate, br, zstd"
+      },
+      {
+        "name": "accept-language",
+        "value": "en-US,en;q=0.9,th;q=0.8"
+      },
+      {
+        "name": "cache-control",
+        "value": "no-cache"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "pragma",
+        "value": "no-cache"
+      },
+      {
+        "name": "priority",
+        "value": "u=1, i"
+      },
+      {
+        "name": "referer",
+        "value": "https://affiliate.shopee.co.th/offer/product_offer"
+      },
+      {
+        "name": "sec-ch-ua",
+        "value": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\""
+      },
+      {
+        "name": "sec-ch-ua-mobile",
+        "value": "?0"
+      },
+      {
+        "name": "sec-ch-ua-platform",
+        "value": "\"macOS\""
+      },
+      {
+        "name": "sec-fetch-dest",
+        "value": "empty"
+      },
+      {
+        "name": "sec-fetch-mode",
+        "value": "cors"
+      },
+      {
+        "name": "sec-fetch-site",
+        "value": "same-origin"
+      },
+      {
+        "name": "user-agent",
+        "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      }
+    ],
+    "post_data": null,
+    "status": 200,
+    "response_headers": [
+      {
+        "name": "cache-control",
+        "value": "no-cache, no-store"
+      },
+      {
+        "name": "content-length",
+        "value": "53"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "date",
+        "value": "Thu, 16 Jul 2026 04:44:12 GMT"
+      },
+      {
+        "name": "etag",
+        "value": "\"8d7a8cf706159855b5dfa64efc1e3ad0\""
+      },
+      {
+        "name": "last-modified",
+        "value": "Tue, 07 Jul 2026 11:05:08 GMT"
+      },
+      {
+        "name": "originalmd5",
+        "value": "8d7a8cf706159855b5dfa64efc1e3ad0"
+      },
+      {
+        "name": "server",
+        "value": "SGW"
+      },
+      {
+        "name": "x-cache-status",
+        "value": "HIT"
+      },
+      {
+        "name": "x-cdn",
+        "value": "staticcache"
+      },
+      {
+        "name": "x-origin",
+        "value": "uss"
+      },
+      {
+        "name": "x-ratelimit-limit",
+        "value": "1666.6666666667"
+      },
+      {
+        "name": "x-ratelimit-remaining",
+        "value": "1647.6666666667"
+      },
+      {
+        "name": "x-request-id",
+        "value": "79e00cd9-a02a-4ae9-9548-ba105bee1107"
+      },
+      {
+        "name": "x-uri",
+        "value": "/shopee-affiliate-live-th/version.json"
+      },
+      {
+        "name": "x-via",
+        "value": "69.3"
+      }
+    ],
+    "response_body_truncated": {
+      "gitTag": "tag-feature-release-20260707-184257"
+    }
+  },
+  {
+    "method": "GET",
+    "url": "https://affiliate.shopee.co.th/version.json?t=1784177081911",
+    "path": "/version.json",
+    "request_headers": [
+      {
+        "name": ":authority",
+        "value": "affiliate.shopee.co.th"
+      },
+      {
+        "name": ":method",
+        "value": "GET"
+      },
+      {
+        "name": ":path",
+        "value": "/version.json?t=1784177081911"
+      },
+      {
+        "name": ":scheme",
+        "value": "https"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      },
+      {
+        "name": "accept-encoding",
+        "value": "gzip, deflate, br, zstd"
+      },
+      {
+        "name": "accept-language",
+        "value": "en-US,en;q=0.9,th;q=0.8"
+      },
+      {
+        "name": "cache-control",
+        "value": "no-cache"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "pragma",
+        "value": "no-cache"
+      },
+      {
+        "name": "priority",
+        "value": "u=1, i"
+      },
+      {
+        "name": "referer",
+        "value": "https://affiliate.shopee.co.th/offer/product_offer"
+      },
+      {
+        "name": "sec-ch-ua",
+        "value": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\""
+      },
+      {
+        "name": "sec-ch-ua-mobile",
+        "value": "?0"
+      },
+      {
+        "name": "sec-ch-ua-platform",
+        "value": "\"macOS\""
+      },
+      {
+        "name": "sec-fetch-dest",
+        "value": "empty"
+      },
+      {
+        "name": "sec-fetch-mode",
+        "value": "cors"
+      },
+      {
+        "name": "sec-fetch-site",
+        "value": "same-origin"
+      },
+      {
+        "name": "user-agent",
+        "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+      }
+    ],
+    "post_data": null,
+    "status": 200,
+    "response_headers": [
+      {
+        "name": "cache-control",
+        "value": "no-cache, no-store"
+      },
+      {
+        "name": "content-length",
+        "value": "53"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "date",
+        "value": "Thu, 16 Jul 2026 04:44:42 GMT"
+      },
+      {
+        "name": "etag",
+        "value": "\"8d7a8cf706159855b5dfa64efc1e3ad0\""
+      },
+      {
+        "name": "last-modified",
+        "value": "Tue, 07 Jul 2026 11:05:08 GMT"
+      },
+      {
+        "name": "originalmd5",
+        "value": "8d7a8cf706159855b5dfa64efc1e3ad0"
+      },
+      {
+        "name": "server",
+        "value": "SGW"
+      },
+      {
+        "name": "x-cache-status",
+        "value": "HIT"
+      },
+      {
+        "name": "x-cdn",
+        "value": "staticcache"
+      },
+      {
+        "name": "x-origin",
+        "value": "uss"
+      },
+      {
+        "name": "x-ratelimit-limit",
+        "value": "1666.6666666667"
+      },
+      {
+        "name": "x-ratelimit-remaining",
+        "value": "1647.6666666667"
+      },
+      {
+        "name": "x-request-id",
+        "value": "79e00cd9-a02a-4ae9-9548-ba105bee1107"
+      },
+      {
+        "name": "x-uri",
+        "value": "/shopee-affiliate-live-th/version.json"
+      },
+      {
+        "name": "x-via",
+        "value": "69.3"
+      }
+    ],
+    "response_body_truncated": {
+      "gitTag": "tag-feature-release-20260707-184257"
+    }
+  }
+]
