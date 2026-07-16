@@ -1,7 +1,7 @@
 ---
 name: Implement SQLite persistence (saved_items + outputs)
 labels: [wayfinder:task]
-status: open
+status: closed
 assignee: unassigned
 blocked_by: [bootstrap-python-project]
 parent: map

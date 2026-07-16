@@ -7,7 +7,7 @@ This bootstrap ticket ships a hello-world app: `/` and `/health` both return
 from __future__ import annotations
 
 import logging
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
 
 from fastapi import FastAPI
 from pydantic import BaseModel
