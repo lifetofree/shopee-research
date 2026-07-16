@@ -108,9 +108,15 @@ def create_app(
     # Browsers don't accept `*` in the origin part of CORS; we use a regex
     # so `http://localhost:5173`, `http://localhost:8788`, and any future
     # port all work without a code change.
+    #
+    # The Shopee origins are allowed because the browser extension's content
+    # scripts POST captured items here directly from those pages (the MV3
+    # background worker sleep/wake cycle is unreliable, so saves bypass it).
+    # The app is localhost-only and single-user, so widening CORS to the two
+    # Shopee origins carries no real exposure.
     app.add_middleware(
         CORSMiddleware,
-        allow_origin_regex=r"http://localhost(:\d+)?",
+        allow_origin_regex=r"http://localhost(:\d+)?|https://(affiliate\.)?shopee\.co\.th",
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
