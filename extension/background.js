@@ -33,10 +33,10 @@ chrome.runtime.onInstalled.addListener(async () => {
 // --- message router -----------------------------------------------------
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg && msg.kind === "CAPTURED_ITEMS") {
-    _handleCaptured(msg, sender).then(
-      (n) => sendResponse({ saved: n }),
-      (err) => sendResponse({ saved: 0, error: String(err && err.message || err) }),
+  if (msg && msg.kind === "SAVE_ITEM") {
+    _handleSaveItem(msg).then(
+      (r) => sendResponse(r),
+      (err) => sendResponse({ ok: false, error: String(err && err.message || err) }),
     );
     return true; // async
   }
@@ -50,49 +50,36 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   return false;
 });
 
-// --- capture handling ---------------------------------------------------
+// --- save handling (single item, from a card Save button) ----------------
 
-async function _handleCaptured(msg, sender) {
-  const { captureEnabled } = await chrome.storage.local.get({ captureEnabled: true });
-  if (!captureEnabled) return 0;
+async function _handleSaveItem(msg) {
+  const { item, query } = msg;
+  if (!item || !item.source_id) return { ok: false, error: "missing item.source_id" };
 
-  const { items = [], query, surface } = msg;
-  if (items.length) {
-    // Debug: log the first parsed item so we can see the actual shape the
-    // content script produced (visible in the extension's service-worker console).
-    console.log("[ShopeeTH] captured", items.length, "items from", surface, "— first:", JSON.stringify(items[0]).slice(0, 300));
-  }
-  let saved = 0;
-  let lastError = null;
-
-  for (const item of items) {
-    try {
-      const resp = await fetch(SAVE_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ item, query }),
-      });
-      if (resp.ok) {
-        saved++;
-      } else {
-        lastError = `server ${resp.status}`;
-      }
-    } catch (e) {
-      // Server not running / refused — record once, keep going.
-      lastError = String(e && e.message || e);
+  try {
+    const resp = await fetch(SAVE_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ item, query }),
+    });
+    if (!resp.ok) {
+      const detail = await resp.text().catch(() => "");
+      return { ok: false, error: `server ${resp.status}: ${detail.slice(0, 120)}` };
     }
+    // Bump the popup counter.
+    const cur = await chrome.storage.local.get({ capturedCount: 0 });
+    await chrome.storage.local.set({
+      capturedCount: cur.capturedCount + 1,
+      lastSurface: "affiliate",
+      lastSavedAt: new Date().toISOString(),
+      lastError: null,
+    });
+    return { ok: true };
+  } catch (e) {
+    const errMsg = String(e && e.message || e);
+    await chrome.storage.local.set({ lastError: errMsg });
+    return { ok: false, error: errMsg };
   }
-
-  // Update counters + status for the popup.
-  const cur = await chrome.storage.local.get({ capturedCount: 0 });
-  await chrome.storage.local.set({
-    capturedCount: cur.capturedCount + saved,
-    lastSurface: surface || null,
-    lastSavedAt: saved > 0 ? new Date().toISOString() : null,
-    lastError,
-  });
-
-  return saved;
 }
 
 async function _pingServer() {

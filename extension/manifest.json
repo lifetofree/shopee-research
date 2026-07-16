@@ -31,14 +31,9 @@
     },
     {
       "matches": ["https://affiliate.shopee.co.th/*"],
-      "js": ["content/affiliate.js"],
-      "run_at": "document_start",
-      "world": "MAIN"
-    },
-    {
-      "matches": ["https://affiliate.shopee.co.th/*"],
-      "js": ["shared/parse.js", "content/affiliate_relay.js"],
-      "run_at": "document_start"
+      "js": ["content/cards.js"],
+      "css": ["content/cards.css"],
+      "run_at": "document_idle"
     }
   ]
 }

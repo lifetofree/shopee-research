@@ -1,0 +1,52 @@
+/* cards.css — styling for the Save button injected onto affiliate product cards.
+ *
+ * Scoped under a wrapper class (.sth-save-btn) so it never collides with
+ * Shopee's own styles. Uses high specificity + !important on a few props
+ * because Shopee's CSS is aggressive and would otherwise override positioning.
+ */
+
+.sth-save-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 12px;
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #fff !important;
+  background: #ee4d2d !important; /* Shopee orange */
+  border: none !important;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: background 0.15s, opacity 0.15s;
+  z-index: 5;
+}
+
+.sth-save-btn:hover {
+  background: #d73211 !important;
+}
+
+.sth-save-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Saved state — green checkmark, non-interactive feel */
+.sth-save-btn.sth-saved {
+  background: #16a34a !important;
+  cursor: default;
+}
+
+.sth-save-btn.sth-saving {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.sth-save-btn.sth-error {
+  background: #dc2626 !important;
+}

@@ -1,4 +1,4 @@
-/* popup/popup.js — shows capture status + server health, toggles capture. */
+/* popup/popup.js — shows saved-item count + server health. */
 (function () {
   "use strict";
 
@@ -11,7 +11,6 @@
     lastSavedAt: document.getElementById("last-saved-at"),
     errorRow: document.getElementById("error-row"),
     lastError: document.getElementById("last-error"),
-    toggle: document.getElementById("capture-toggle"),
     appLink: document.getElementById("app-link"),
   };
 
@@ -24,12 +23,10 @@
       lastSurface: null,
       lastSavedAt: null,
       lastError: null,
-      captureEnabled: true,
     });
     els.capturedCount.textContent = String(s.capturedCount);
     els.lastSurface.textContent = s.lastSurface || "—";
     els.lastSavedAt.textContent = s.lastSavedAt ? _fmtTime(s.lastSavedAt) : "—";
-    els.toggle.checked = s.captureEnabled;
     if (s.lastError) {
       els.errorRow.classList.remove("hidden");
       els.lastError.textContent = s.lastError;
@@ -55,11 +52,6 @@
     els.serverStatus.textContent = "offline (run `make run`)";
     els.serverStatus.className = "value bad";
   }
-
-  // --- toggle -----------------------------------------------------------
-  els.toggle.addEventListener("change", async () => {
-    await chrome.storage.local.set({ captureEnabled: els.toggle.checked });
-  });
 
   function _fmtTime(iso) {
     try {
