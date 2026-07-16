@@ -1,6 +1,5 @@
 .PHONY: help install run test lint e2e smoke dev-reset refresh-cookie capture-affiliate-traffic clean
 
-PYTHON ?= uv run python
 UV    ?= uv
 APP   := src.shopee_th.main:app
 
@@ -24,7 +23,7 @@ run:
 	$(UV) run uvicorn $(APP) --reload --host 127.0.0.1 --port 8000
 
 test:
-	$(UV) run pytest
+	$(UV) run pytest -m "not e2e"
 
 lint:
 	$(UV) run ruff check src tests
@@ -37,7 +36,7 @@ e2e:
 	$(UV) run pytest -m e2e
 
 smoke:
-	$(PYTHON) -c "from shopee_th.main import app; print('app factory ok:', app.title)"
+	$(UV) run pytest tests/test_smoke.py -v
 
 dev-reset:
 	@echo "About to delete data/shopee_th.db and .env (if present)."

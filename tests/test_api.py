@@ -10,24 +10,17 @@ authoritative surface. If these tests pass, the wire contract holds.
 
 from __future__ import annotations
 
-import asyncio
-from typing import AsyncIterator
-
 import httpx
 import pytest
-import pytest_asyncio
-from sqlalchemy import event
-from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
-from sqlalchemy.pool import StaticPool
 
 from shopee_th.config import Settings
 from shopee_th.main import create_app
-from shopee_th.models.db import Base, _enable_sqlite_fk, set_engine
-from shopee_th.services.generation import TemplateGenerator
 from shopee_th.services.transport import NoopTransport, TransportResponse
 
+# `app` and `client` fixtures live in tests/conftest.py (shared with test_smoke.py).
 
-# --- App fixture -----------------------------------------------------------
+
+# --- Canned data -------------------------------------------------------------
 
 
 def _surface_a_ok(*items: dict) -> TransportResponse:
@@ -53,52 +46,6 @@ def _item(
             "name": title,
         }
     }
-
-
-@pytest_asyncio.fixture
-async def app() -> AsyncIterator:
-    """Build a fresh FastAPI app per test with in-memory DB + NoopTransport."""
-    # Set up an in-memory SQLite engine; the persistence layer's _enable_sqlite_fk
-    # listener enforces ON DELETE CASCADE.
-    engine: AsyncEngine = create_async_engine(
-        "sqlite+aiosqlite:///:memory:",
-        future=True,
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    event.listen(engine.sync_engine, "connect", _enable_sqlite_fk)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    set_engine(engine)
-
-    settings = Settings(
-        session_cookie="SPC=test-cookie",
-        affiliate_cookie="SPC_AFF=test-cookie",
-        generator="stub",
-        db_url="sqlite+aiosqlite:///:memory:",
-        log_level="WARNING",
-    )
-    transport = NoopTransport()
-    generator = TemplateGenerator()
-
-    application = create_app(settings=settings, transport=transport, generator=generator)
-    application.state.noop_transport = transport  # convenient for tests
-    application.state.in_memory_engine = engine
-
-    try:
-        yield application
-    finally:
-        # Reset module-level engine so subsequent tests start clean.
-        set_engine(None)  # type: ignore[arg-type]
-        await engine.dispose()
-
-
-@pytest_asyncio.fixture
-async def client(app) -> AsyncIterator[httpx.AsyncClient]:
-    """An httpx AsyncClient bound to the app's ASGI transport."""
-    transport = httpx.ASGITransport(app=app)
-    async with httpx.AsyncClient(transport=transport, base_url="http://test") as c:
-        yield c
 
 
 # --- Health ----------------------------------------------------------------

@@ -41,6 +41,9 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 addopts = "-ra"
 pythonpath = ["scripts"]
+markers = [
+    "e2e: live end-to-end test against the real Shopee Affiliate TH portal (needs SHOPEE_TH_E2E_COOKIE); see `make e2e`.",
+]
 
 [tool.ruff]
 line-length = 100

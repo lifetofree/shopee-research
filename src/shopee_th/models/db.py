@@ -18,8 +18,10 @@ migrations in this ticket.
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 
 from sqlalchemy import ForeignKey, Index, Integer, Text, func
+from sqlalchemy.engine import make_url
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -94,9 +96,26 @@ def _enable_sqlite_fk(dbapi_conn, _connection_record) -> None:
     cursor.close()
 
 
+def _ensure_sqlite_dir(url: str) -> None:
+    """Create the parent directory for a file-based SQLite URL, if missing.
+
+    A fresh clone has no `data/` directory, and aiosqlite doesn't create
+    parent directories itself — without this, the default
+    `sqlite+aiosqlite:///./data/shopee_th.db` fails on the very first
+    connection attempt (`make run`'s startup, or the e2e/smoke test boot).
+    """
+    if not url.startswith("sqlite"):
+        return
+    database = make_url(url).database
+    if not database or database == ":memory:":
+        return
+    Path(database).resolve().parent.mkdir(parents=True, exist_ok=True)
+
+
 def create_engine(db_url: str | None = None) -> AsyncEngine:
     """Build an async engine for ``db_url`` (defaults to ``Settings.db_url``)."""
     url = db_url or get_settings().db_url
+    _ensure_sqlite_dir(url)
     engine = create_async_engine(url, future=True)
 
     # SQLite needs per-connection FK enabling. Non-SQLite URLs ignore the listener.

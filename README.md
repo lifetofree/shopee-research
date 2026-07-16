@@ -32,7 +32,7 @@ Open <http://localhost:8000>, type a product name, save items, click **Generate 
 | Target | Purpose |
 |--------|---------|
 | `make run` | Start the dev server (reload on change). |
-| `make test` | Run the unit + e2e API test suite. |
+| `make test` | Run the offline unit + in-process API test suite (excludes the live `e2e` marker). |
 | `make lint` | Run ruff. |
 | `make e2e` | Boot uvicorn, hit every API endpoint end-to-end. Requires `SHOPEE_TH_E2E_COOKIE`; otherwise skipped. |
 | `make smoke` | Spin the app up against mocks; always-on. |
