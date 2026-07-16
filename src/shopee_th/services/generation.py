@@ -38,6 +38,11 @@ HASHTAG_MIN = 4
 HASHTAG_MAX = 7
 CLIP_PROMPT_MAX = 300
 
+# Caps each individual hashtag word. Guarantees HASHTAG_MIN hashtags always
+# fit inside CAPTION_TOTAL_MAX even with an empty body, so the length-cap
+# and hashtag-count-floor contracts can never conflict.
+HASHTAG_WORD_MAX = 20
+
 # --- OutputGenerator Protocol ------------------------------------------------
 
 
@@ -140,7 +145,8 @@ def _category_hashtag(item: Item) -> str:
     if isinstance(cats, list) and cats:
         first = cats[0]
         if isinstance(first, str) and first.strip():
-            return re.sub(r"[^a-z0-9-]+", "-", first.lower()).strip("-") or "finds"
+            slug = re.sub(r"[^a-z0-9-]+", "-", first.lower()).strip("-") or "finds"
+            return slug[:HASHTAG_WORD_MAX]
     title = (item.title or "").lower()
     for keyword, slug in _CATEGORY_KEYWORDS.items():
         if keyword in title:
@@ -153,7 +159,7 @@ def _title_word_hashtags(title: str, count: int) -> list[str]:
     if not title:
         return ["musthave", "recommend"][:count]
     words = re.findall(r"[a-zA-Z0-9]{3,}", title.lower())
-    candidates = [w for w in words if w not in _TITLE_STOPWORDS]
+    candidates = [w[:HASHTAG_WORD_MAX] for w in words if w not in _TITLE_STOPWORDS]
     if not candidates:
         return ["musthave", "recommend"][:count]
     # Longest words first — they're more distinctive.
@@ -200,16 +206,18 @@ class TemplateGenerator:
     def caption(self, item: Item) -> str:
         body = _caption_body(item)
         hashtags = _all_hashtags(item)
-        # Iteratively shrink to fit CAPTION_TOTAL_MAX:
-        # 1. truncate the body to a cap, 2. if still over, drop the
-        #    lowest-priority hashtag. Result is always ≤ 250 chars.
-        for _ in range(CAPTION_BODY_MAX + 1):
+        # Shrink the body to fit CAPTION_TOTAL_MAX first, all the way down to
+        # empty if needed; only drop a hashtag (and never below HASHTAG_MIN)
+        # once an empty body still isn't enough. HASHTAG_WORD_MAX makes that
+        # last resort effectively unreachable, but the floor is enforced
+        # either way so the 4-7 hashtag contract can't be violated silently.
+        for _ in range(CAPTION_BODY_MAX + len(hashtags) + 1):
             text = self._join_caption(body, hashtags)
             if len(text) <= CAPTION_TOTAL_MAX:
                 return text
-            if len(body) > 1:
+            if body:
                 body = body[:-1]
-            elif hashtags:
+            elif len(hashtags) > HASHTAG_MIN:
                 hashtags.pop()
             else:
                 return text[:CAPTION_TOTAL_MAX]

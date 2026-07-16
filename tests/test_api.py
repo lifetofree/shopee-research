@@ -361,3 +361,23 @@ async def test_cors_allows_localhost_origin(
         # some Starlette versions echo the origin
         "*",
     )
+
+
+# --- Generator wiring --------------------------------------------------------
+
+
+def test_create_app_generator_respects_settings_when_not_overridden() -> None:
+    # Regression: create_app() used to call get_generator() with no args,
+    # which reads os.environ directly — but pydantic-settings loads
+    # SHOPEE_TH_GENERATOR from `.env` without ever touching os.environ, so
+    # a `.env`-only setting was silently ignored. This exercises the
+    # settings -> generator wiring with no explicit `generator=` override.
+    from shopee_th.services.generation import LLMGenerator, TemplateGenerator
+
+    stub_settings = Settings(generator="stub", db_url="sqlite+aiosqlite:///:memory:")
+    stub_app = create_app(settings=stub_settings, transport=NoopTransport())
+    assert isinstance(stub_app.state.generator, TemplateGenerator)
+
+    llm_settings = Settings(generator="llm", db_url="sqlite+aiosqlite:///:memory:")
+    llm_app = create_app(settings=llm_settings, transport=NoopTransport())
+    assert isinstance(llm_app.state.generator, LLMGenerator)

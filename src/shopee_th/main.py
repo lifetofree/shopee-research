@@ -86,7 +86,10 @@ def create_app(
     """
     settings = settings or get_settings()
     transport = transport or HttpTransport()
-    generator = generator or get_generator()
+    # Pass settings.generator explicitly: get_generator() alone reads
+    # os.environ, but pydantic-settings loads SHOPEE_TH_GENERATOR from
+    # `.env` directly without touching os.environ, so the two can disagree.
+    generator = generator or get_generator(settings.generator)
 
     app = FastAPI(
         title="shopee-th",

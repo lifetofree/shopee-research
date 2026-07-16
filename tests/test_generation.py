@@ -84,6 +84,17 @@ def test_caption_hashtag_count_in_range() -> None:
     assert HASHTAG_MIN <= hashtag_count <= HASHTAG_MAX
 
 
+def test_caption_long_title_and_brand_keeps_both_caps() -> None:
+    # Regression: a long title + long brand used to shrink the body to a
+    # single char and then pop hashtags below HASHTAG_MIN to hit the total
+    # cap, satisfying the length contract while violating the count one.
+    seed = _item(title="A" * 200, brand="B" * 100, price=999_999.0, sold=999_999)
+    out = TemplateGenerator().caption(seed)
+    hashtag_count = sum(1 for tok in out.split() if tok.startswith("#"))
+    assert len(out) <= CAPTION_TOTAL_MAX
+    assert HASHTAG_MIN <= hashtag_count <= HASHTAG_MAX
+
+
 def test_caption_contains_title_or_fallback() -> None:
     gen = TemplateGenerator()
     out = gen.caption(_item(title="iPhone 15 silicone case"))

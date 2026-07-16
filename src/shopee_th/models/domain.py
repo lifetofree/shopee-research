@@ -19,11 +19,16 @@ conftest fixtures + test assertions):
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from shopee_th.models.db import Output, SavedItem
+if TYPE_CHECKING:
+    # Type-only: keeps this module free of a runtime dependency on the ORM
+    # layer (SPEC.md: "Pydantic DTOs kept separate from ORM models"), while
+    # `from __future__ import annotations` makes the `row: SavedItem` hint
+    # below a lazily-evaluated string, so no import is needed at runtime.
+    from shopee_th.models.db import SavedItem
 
 
 class Item(BaseModel):
