@@ -129,28 +129,57 @@
     host.appendChild(btn);
   }
 
-  function onSaveClick(btn, data) {
+  const SERVER_URL = "http://127.0.0.1:8000";
+  const SAVE_ENDPOINT = SERVER_URL + "/api/saved";
+
+  async function onSaveClick(btn, data) {
     if (btn.classList.contains("sth-saved")) return; // already saved
     btn.classList.add("sth-saving");
+    btn.disabled = true;
     btn.textContent = "Saving…";
     const query = currentQuery();
-    chrome.runtime.sendMessage(
-      { kind: "SAVE_ITEM", item: data, query },
-      (resp) => {
-        btn.classList.remove("sth-saving");
-        if (resp && resp.ok) {
-          btn.classList.add("sth-saved");
-          btn.textContent = "Saved ✓";
-        } else {
-          btn.classList.add("sth-error");
-          btn.textContent = "Failed ✗";
-          setTimeout(() => {
-            btn.classList.remove("sth-error");
-            btn.textContent = "Save";
-          }, 2000);
-        }
-      },
-    );
+
+    // POST directly to the local server. Content scripts CAN fetch
+    // 127.0.0.1 because host_permissions includes it — no need to round-trip
+    // through the MV3 background service worker (which sleeps and would hang
+    // the button when it doesn't wake reliably).
+    try {
+      const resp = await fetch(SAVE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ item: data, query }),
+      });
+      _finish(btn, resp.ok, resp.ok ? null : `server ${resp.status}`);
+    } catch (e) {
+      _finish(btn, false, String(e && e.message || e));
+    }
+  }
+
+  function _finish(btn, ok, _err) {
+    btn.classList.remove("sth-saving");
+    btn.disabled = false;
+    if (ok) {
+      btn.classList.add("sth-saved");
+      btn.textContent = "Saved ✓";
+      // Bump the popup counter via storage (best-effort; no response needed).
+      try {
+        chrome.storage.local.get({ capturedCount: 0 }, ({ capturedCount }) => {
+          chrome.storage.local.set({
+            capturedCount: capturedCount + 1,
+            lastSurface: "affiliate",
+            lastSavedAt: new Date().toISOString(),
+            lastError: null,
+          });
+        });
+      } catch (e) {}
+    } else {
+      btn.classList.add("sth-error");
+      btn.textContent = "Failed ✗";
+      setTimeout(() => {
+        btn.classList.remove("sth-error");
+        btn.textContent = "Save";
+      }, 2500);
+    }
   }
 
   function currentQuery() {
