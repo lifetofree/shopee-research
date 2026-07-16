@@ -129,9 +129,6 @@
     host.appendChild(btn);
   }
 
-  const SERVER_URL = "http://127.0.0.1:8000";
-  const SAVE_ENDPOINT = SERVER_URL + "/api/saved";
-
   async function onSaveClick(btn, data) {
     if (btn.classList.contains("sth-saved")) return; // already saved
     btn.classList.add("sth-saving");
@@ -139,46 +136,55 @@
     btn.textContent = "Saving…";
     const query = currentQuery();
 
-    // POST directly to the local server. Content scripts CAN fetch
-    // 127.0.0.1 because host_permissions includes it — no need to round-trip
-    // through the MV3 background service worker (which sleeps and would hang
-    // the button when it doesn't wake reliably).
+    // Route through the background service worker. The content script runs in
+    // the PAGE's origin (affiliate.shopee.co.th), so a direct fetch to
+    // http://127.0.0.1:8000 is blocked by the page's Content-Security-Policy
+    // (connect-src). The background worker runs in the extension's own context
+    // — no page CSP — so its fetch succeeds.
+    let done = false;
+    const timer = setTimeout(() => {
+      if (done) return;
+      done = true;
+      _finish(btn, false, "timeout — reload ext");
+    }, 10000);
+
     try {
-      const resp = await fetch(SAVE_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ item: data, query }),
-      });
-      _finish(btn, resp.ok, resp.ok ? null : `server ${resp.status}`);
+      chrome.runtime.sendMessage(
+        { kind: "SAVE_ITEM", item: data, query },
+        (resp) => {
+          if (done) return;
+          done = true;
+          clearTimeout(timer);
+          const le = chrome.runtime.lastError;
+          if (le) {
+            _finish(btn, false, "worker asleep — retry");
+          } else {
+            _finish(btn, !!(resp && resp.ok), resp && resp.error);
+          }
+        },
+      );
     } catch (e) {
-      _finish(btn, false, String(e && e.message || e));
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      _finish(btn, false, String(e && e.message || e).slice(0, 30));
     }
   }
 
-  function _finish(btn, ok, _err) {
+  function _finish(btn, ok, err) {
     btn.classList.remove("sth-saving");
     btn.disabled = false;
     if (ok) {
       btn.classList.add("sth-saved");
       btn.textContent = "Saved ✓";
-      // Bump the popup counter via storage (best-effort; no response needed).
-      try {
-        chrome.storage.local.get({ capturedCount: 0 }, ({ capturedCount }) => {
-          chrome.storage.local.set({
-            capturedCount: capturedCount + 1,
-            lastSurface: "affiliate",
-            lastSavedAt: new Date().toISOString(),
-            lastError: null,
-          });
-        });
-      } catch (e) {}
     } else {
       btn.classList.add("sth-error");
-      btn.textContent = "Failed ✗";
+      btn.title = err || "save failed";
+      btn.textContent = err ? `✗ ${String(err).slice(0, 24)}` : "Failed ✗";
       setTimeout(() => {
         btn.classList.remove("sth-error");
         btn.textContent = "Save";
-      }, 2500);
+      }, 4000);
     }
   }
 

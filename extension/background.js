@@ -34,11 +34,13 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg && msg.kind === "SAVE_ITEM") {
-    _handleSaveItem(msg).then(
-      (r) => sendResponse(r),
-      (err) => sendResponse({ ok: false, error: String(err && err.message || err) }),
-    );
-    return true; // async
+    // The worker is woken by the message itself; do the fetch here (extension
+    // context, so no page-CSP block), then respond. Returning true keeps the
+    // message channel open for the async sendResponse.
+    _handleSaveItem(msg)
+      .then((r) => sendResponse(r))
+      .catch((err) => sendResponse({ ok: false, error: String(err && err.message || err) }));
+    return true; // async — keep the channel open
   }
   if (msg && msg.kind === "PING_SERVER") {
     _pingServer().then(
@@ -64,7 +66,7 @@ async function _handleSaveItem(msg) {
     });
     if (!resp.ok) {
       const detail = await resp.text().catch(() => "");
-      return { ok: false, error: `server ${resp.status}: ${detail.slice(0, 120)}` };
+      return { ok: false, error: `server ${resp.status}: ${detail.slice(0, 80)}` };
     }
     // Bump the popup counter.
     const cur = await chrome.storage.local.get({ capturedCount: 0 });
