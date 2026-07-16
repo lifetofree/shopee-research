@@ -31,9 +31,9 @@ lint:
 e2e:
 	@if [ -z "$$SHOPEE_TH_E2E_COOKIE" ]; then \
 		echo "set SHOPEE_TH_E2E_COOKIE to run against the live portal; skipping e2e."; \
-		exit 0; \
+	else \
+		$(UV) run pytest -m e2e; \
 	fi
-	$(UV) run pytest -m e2e
 
 smoke:
 	$(UV) run pytest tests/test_smoke.py -v
