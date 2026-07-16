@@ -136,39 +136,49 @@
     btn.textContent = "Saving…";
     const query = currentQuery();
 
-    // Route through the background service worker. The content script runs in
-    // the PAGE's origin (affiliate.shopee.co.th), so a direct fetch to
-    // http://127.0.0.1:8000 is blocked by the page's Content-Security-Policy
-    // (connect-src). The background worker runs in the extension's own context
-    // — no page CSP — so its fetch succeeds.
-    let done = false;
-    const timer = setTimeout(() => {
-      if (done) return;
-      done = true;
-      _finish(btn, false, "timeout — reload ext");
-    }, 10000);
+    // Route through the background service worker (it can fetch 127.0.0.1
+    // because it runs in the extension context — no page-CSP block, unlike a
+    // content-script fetch). MV3 workers sleep, and the first message may hit
+    // "receiving end does not exist" before the worker wakes — so retry a few
+    // times with a short delay; the wake takes ~50-200ms.
+    const result = await _sendWithRetry(
+      { kind: "SAVE_ITEM", item: data, query },
+      { tries: 5, delayMs: 250 },
+    );
+    _finish(btn, !!(result && result.ok), result && result.error);
+  }
 
-    try {
-      chrome.runtime.sendMessage(
-        { kind: "SAVE_ITEM", item: data, query },
-        (resp) => {
-          if (done) return;
-          done = true;
-          clearTimeout(timer);
-          const le = chrome.runtime.lastError;
-          if (le) {
-            _finish(btn, false, "worker asleep — retry");
+  /** Send a message to the background, retrying on the "no receiver" error
+   *  that occurs while the MV3 service worker is waking up. */
+  function _sendWithRetry(msg, { tries, delayMs }) {
+    return new Promise((resolve) => {
+      let attempt = 0;
+      const tryOnce = () => {
+        attempt++;
+        try {
+          chrome.runtime.sendMessage(msg, (resp) => {
+            const le = chrome.runtime.lastError;
+            if (le && /Receiving end does not exist|could not establish/i.test(le.message)) {
+              // Worker not awake yet — retry if we have attempts left.
+              if (attempt < tries) {
+                setTimeout(tryOnce, delayMs);
+              } else {
+                resolve({ ok: false, error: "worker asleep" });
+              }
+              return;
+            }
+            resolve(resp || { ok: false, error: le ? le.message : "no response" });
+          });
+        } catch (e) {
+          if (attempt < tries) {
+            setTimeout(tryOnce, delayMs);
           } else {
-            _finish(btn, !!(resp && resp.ok), resp && resp.error);
+            resolve({ ok: false, error: String(e && e.message || e) });
           }
-        },
-      );
-    } catch (e) {
-      if (done) return;
-      done = true;
-      clearTimeout(timer);
-      _finish(btn, false, String(e && e.message || e).slice(0, 30));
-    }
+        }
+      };
+      tryOnce();
+    });
   }
 
   function _finish(btn, ok, err) {
