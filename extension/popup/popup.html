@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Shopee TH Capture</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <h1>Shopee TH Capture</h1>
+  </header>
+
+  <section class="status">
+    <div class="row">
+      <span class="label">Local server</span>
+      <span id="server-status" class="value checking">checking…</span>
+    </div>
+    <div class="row">
+      <span class="label">Captured</span>
+      <span id="captured-count" class="value">—</span>
+    </div>
+    <div class="row">
+      <span class="label">Last surface</span>
+      <span id="last-surface" class="value">—</span>
+    </div>
+    <div class="row">
+      <span class="label">Last save</span>
+      <span id="last-saved-at" class="value">—</span>
+    </div>
+    <div id="error-row" class="row error hidden">
+      <span class="label">Error</span>
+      <span id="last-error" class="value"></span>
+    </div>
+  </section>
+
+  <section class="controls">
+    <label class="switch">
+      <input type="checkbox" id="capture-toggle" checked />
+      <span class="track"><span class="thumb"></span></span>
+      <span class="switch-label">Capture on/off</span>
+    </label>
+  </section>
+
+  <section class="hint">
+    <p>Search on <code>shopee.co.th</code> or browse offers on
+    <code>affiliate.shopee.co.th</code>. Captured items save to the local app
+    automatically. View them at <a id="app-link" href="#" target="_blank"
+    rel="noopener">127.0.0.1:8000</a>.</p>
+  </section>
+
+  <script src="popup.js"></script>
+</body>
+</html>

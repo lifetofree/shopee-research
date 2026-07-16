@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Shopee TH Capture",
+  "version": "0.1.0",
+  "description": "Captures Shopee search results from your real browser and saves them to the local Shopee TH app. Bypasses no anti-bot — reads data the page already fetched.",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": [
+    "https://shopee.co.th/*",
+    "https://affiliate.shopee.co.th/*",
+    "http://127.0.0.1:8000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Shopee TH Capture"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://shopee.co.th/*"],
+      "js": ["shared/parse.js", "content/storefront.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://affiliate.shopee.co.th/*"],
+      "js": ["shared/parse.js", "content/affiliate.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["shared/inject.js"],
+      "matches": ["https://shopee.co.th/*", "https://affiliate.shopee.co.th/*"]
+    }
+  ]
+}

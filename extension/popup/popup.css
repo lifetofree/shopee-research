@@ -1,0 +1,83 @@
+:root {
+  --ok: #16a34a;
+  --bad: #dc2626;
+  --muted: #6b7280;
+  --bg: #ffffff;
+  --fg: #111827;
+  --border: #e5e7eb;
+}
+
+body {
+  width: 320px;
+  margin: 0;
+  font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+header h1 { margin: 0; font-size: 15px; font-weight: 600; }
+
+.status { padding: 10px 14px; }
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 3px 0;
+  gap: 12px;
+}
+.label { color: var(--muted); }
+.value { font-variant-numeric: tabular-nums; }
+.value.checking { color: var(--muted); }
+.value.ok { color: var(--ok); font-weight: 600; }
+.value.bad { color: var(--bad); font-weight: 600; }
+.error .value { color: var(--bad); }
+.hidden { display: none; }
+
+.controls {
+  padding: 8px 14px 12px;
+  border-top: 1px solid var(--border);
+}
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 34px; height: 20px;
+  border-radius: 999px;
+  background: #cbd5e1;
+  position: relative;
+  transition: background 0.15s;
+}
+.switch input:checked + .track { background: var(--ok); }
+.thumb {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 2px; left: 2px;
+  transition: left 0.15s;
+}
+.switch input:checked + .track .thumb { left: 16px; }
+.switch-label { color: var(--fg); }
+
+.hint {
+  padding: 8px 14px 12px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+}
+.hint code {
+  background: #f3f4f6;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+.hint a { color: #2563eb; }
