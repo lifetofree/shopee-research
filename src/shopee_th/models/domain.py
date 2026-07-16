@@ -44,9 +44,9 @@ class Item(BaseModel):
 
     source_id: str = Field(description="Shopee's item id; idempotency key for saves.")
     title: str = Field(default="", description="Product title (used by the caption/clip-prompt generator).")
-    image: str = Field(description="Full product image URL.")
-    price: float = Field(ge=0.0, description="Price in THB (float; satang allowed).")
-    sold: int = Field(ge=0, description="Historical sold count.")
+    image: str | None = Field(default=None, description="Full product image URL. None if the upstream item had no image.")
+    price: float | None = Field(default=None, ge=0.0, description="Price in THB. None when the upstream price is missing/garbled.")
+    sold: int | None = Field(default=None, ge=0, description="Historical sold count. None when the upstream omits it.")
     commission: float | None = Field(
         default=None,
         ge=0.0,

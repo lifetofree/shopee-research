@@ -57,6 +57,11 @@ async function _handleCaptured(msg, sender) {
   if (!captureEnabled) return 0;
 
   const { items = [], query, surface } = msg;
+  if (items.length) {
+    // Debug: log the first parsed item so we can see the actual shape the
+    // content script produced (visible in the extension's service-worker console).
+    console.log("[ShopeeTH] captured", items.length, "items from", surface, "— first:", JSON.stringify(items[0]).slice(0, 300));
+  }
   let saved = 0;
   let lastError = null;
 
