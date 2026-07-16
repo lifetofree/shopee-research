@@ -1,13 +1,19 @@
-"""Pydantic DTOs for the search + persistence seams.
+"""Pydantic DTOs for the search/save/outputs API contract.
 
-`Item` promotes `image`, `price`, `sold`, `commission` per the two-leg merge
-contract in docs/SPEC.md; every other Surface A field (name, itemid, shopid,
-ratings, ...) is preserved verbatim in `raw` so nothing upstream is lost
-before it reaches SQLite persistence.
+These types are the boundary between the upstream Shopee payloads, the
+search service, the persistence layer, and the HTTP API. They are deliberately
+separate from the SQLAlchemy ORM models (in `models.db`) so the API contract
+can evolve independently of storage.
 
-`SavedItemDTO` and `OutputDTO` are the API-contract shapes for persisted rows,
-kept separate from the ORM models in `models/db.py` so the HTTP layer never
-leaks SQLAlchemy types.
+Two notes about the `Item` shape (reconciled with the persistence ticket's
+conftest fixtures + test assertions):
+
+- `price` is a `float` (THB can have satang). The search service emits whole
+  numbers today (the upstream is micro-units divided by 100_000), but the
+  persistence layer and tests round-trip floats, so the type is open.
+- `title` is a promoted field. The caption / clip-prompt generator reads it
+  directly; everything else (brand, category, etc.) lives in `raw` and is
+  re-derivable from the upstream payload at any time.
 """
 
 from __future__ import annotations
@@ -15,47 +21,89 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+from shopee_th.models.db import Output, SavedItem
 
 
 class Item(BaseModel):
-    """A single search result, merged from Surface A (+ best-effort Surface B)."""
+    """A single product returned by the search service.
 
-    source_id: str
-    title: str
+    The promoted fields are denormalized for the UI; `raw` carries the full
+    upstream payload so the persistence layer can re-derive anything else
+    later without losing data. `source_id` is Shopee's item id and is the
+    idempotency key for the `saved_items` table.
+    """
 
-    # --- Two-leg merge contract fields ---
-    image: str | None = None
-    price: float | None = None
-    sold: int | None = None
-    commission: float | None = None
+    model_config = ConfigDict(extra="ignore")
 
-    raw: dict[str, Any] = Field(default_factory=dict)
+    source_id: str = Field(description="Shopee's item id; idempotency key for saves.")
+    title: str = Field(default="", description="Product title (used by the caption/clip-prompt generator).")
+    image: str = Field(description="Full product image URL.")
+    price: float = Field(ge=0.0, description="Price in THB (float; satang allowed).")
+    sold: int = Field(ge=0, description="Historical sold count.")
+    commission: float | None = Field(
+        default=None,
+        ge=0.0,
+        description="Commission rate as a fraction (0.06 = 6%). None until Surface B lands.",
+    )
+    raw: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Full upstream payload for this item. Source of truth for fields not promoted.",
+    )
+
+
+class SearchErrorPayload(BaseModel):
+    """Optional Shopee-side error envelope (a 200 can still carry this)."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    error: int | str | None = None
+    error_msg: str | None = None
+    message: str | None = None
+    warning: str | None = None
+    tracking_id: str | None = None
+    ct_bucket: str | None = Field(default=None, alias="ct_bucket")
 
 
 class SavedItemDTO(BaseModel):
-    """API shape for a persisted saved item. The full captured Item rides in `item`."""
+    """API shape for a saved item (returned by GET /api/saved, POST /api/saved)."""
+
+    model_config = ConfigDict(extra="ignore")
 
     id: int
     query: str
-    source_id: str
+    saved_at: str = Field(
+        description="ISO-8601 timestamp string for the API surface."
+    )
     item: Item
-    saved_at: datetime
 
     @classmethod
-    def from_orm_row(cls, row: Any) -> SavedItemDTO:
-        """Build a DTO from a `SavedItem` ORM row, hydrating the JSON `payload`."""
+    def from_orm_row(cls, row: SavedItem) -> "SavedItemDTO":
+        """Hydrate a `SavedItem` ORM row into the API DTO.
+
+        The row's `payload` is the JSON-serialized `Item`; we re-validate it
+        through Pydantic so any corruption surfaces as a 500 (not a silent
+        empty object). `saved_at` is serialized to ISO-8601 for the API.
+        """
+        item = Item.model_validate_json(row.payload)
+        saved_at = (
+            row.saved_at.isoformat()
+            if isinstance(row.saved_at, datetime)
+            else str(row.saved_at)
+        )
         return cls(
             id=row.id,
             query=row.query,
-            source_id=row.source_id,
-            item=Item.model_validate_json(row.payload),
-            saved_at=row.saved_at,
+            saved_at=saved_at,
+            item=item,
         )
 
 
 class OutputDTO(BaseModel):
-    """API shape for a persisted generation output."""
+    """API shape for a single generated output (caption or clip-prompt)."""
+
+    model_config = ConfigDict(extra="ignore")
 
     id: int
     saved_item_id: int

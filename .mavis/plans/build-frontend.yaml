@@ -1,0 +1,177 @@
+version: 1
+plan:
+  name: "Build the SPA frontend"
+  max_concurrency: 2
+  max_consecutive_failures: 2
+  max_cycles: 6
+  auto_reject_retries: 1
+  verifier_config:
+    default_verifiers: [verifier]
+    audit_sample_rate: 0.0
+tasks:
+  - id: implement-frontend
+    title: "Build single-page HTML/JS frontend"
+    prompt: |
+      Project root: /Users/lifetofree/Documents/Projects/shopee-research
+
+      Implement the v1 single-page HTML/CSS/JS frontend for the shopee-th app.
+      The FastAPI HTTP layer is already wired (see `src/shopee_th/api/routes.py`)
+      and serves a placeholder `static/index.html` at `/`. Your job: replace
+      that placeholder with a real SPA that talks to the documented API.
+
+      ## Deliverable
+
+      - `static/index.html` — the SPA. Self-contained, links `app.js` and
+        `styles.css` from the same directory.
+      - `static/app.js` — vanilla JS, no framework, no build step. All state
+        in plain functions; no globals leak between handlers.
+      - `static/styles.css` — readable on a laptop screen, no UI framework,
+        no theme switcher, no animation library.
+      - `tests/test_ui.py` — at least one Playwright-based e2e test that
+        loads the page against a running FastAPI app and asserts a happy-path
+        flow. **If Playwright Chromium isn't installed, gate the test behind
+        `pytest.mark.skip` with a clear message** — the SPA itself must work
+        in a real browser; the test is verification, not a hard requirement.
+        You may add a fallback `httpx`-based test that fetches `static/index.html`
+        and asserts it parses as HTML and references the expected JS/CSS.
+
+      ## Required flows (per the ticket body and the spec's user stories)
+
+      1. **Search bar at top.** Typing + Enter (or a search button) calls
+         `POST /api/search` and renders the result grid: thumbnail
+         (`item.image`), product name, price (formatted as `฿1,290`),
+         sold count (human-readable, e.g. `1.2K`), commission (e.g. `6%`).
+         A **Save** toggle per row.
+      2. **Re-search replaces results** (not accumulate).
+      3. **Saved items section** — a panel below results, OR a simple tab
+         toggle. Pick one and document it in a comment at the top of
+         `app.js`. Per item, show:
+         - The four fields compactly.
+         - **Generate caption** button → `POST /api/saved/{id}/caption`,
+           render the result in a read-only text area with a
+           **Copy to clipboard** button.
+         - **Generate clip prompt** button → symmetric.
+         - On load, fetch existing outputs
+           (`GET /api/saved/{id}/outputs?kind=...`) and display them under
+           the item so history is preserved across regenerations.
+         - **Remove** button → `DELETE /api/saved/{id}`.
+      4. **States**: explicit loading / empty / error for search and for save.
+         Errors render a dismissible banner with the server-supplied message
+         (`detail.message` from the `ApiError` body); do not swallow them.
+      5. **Idempotency** in the UI: a double-click on "Save" produces exactly
+         one row. The server is already idempotent on `source_id`; the UI
+         must guard against showing "saving…" forever or visually
+         duplicating the row.
+      6. **Cookies/secret**: the web app has no login UI. Secrets stay in
+         `.env` on the laptop, never reach the browser. The SPA talks to
+         the API on the same origin (CORS is wired for `http://localhost:*`).
+
+      ## Sensible defaults
+
+      - Readable on a laptop screen. No UI framework, no theme switcher.
+      - Out of scope: accessibility deep-dive (basic labels and keyboard
+        focus only), mobile-first polish, i18n.
+
+      ## API contract (do not change; consume as-is)
+
+      See `src/shopee_th/api/routes.py` and `src/shopee_th/api/schemas.py`
+      for the full shapes. Key points:
+
+      - `POST /api/search` body `{"query": str, "limit"?: int=20}` →
+        `{"items": [Item, ...]}`. `Item` shape (per `models/domain.py`):
+        `{source_id, title, image, price, sold, commission, raw}`.
+      - `SearchError` upstream → 502 with body
+        `{"detail": {"error": "search_failed", "message": str, "code": "...", "guidance": "..."}}`.
+      - `POST /api/saved` body `{"item": Item, "query": str}` → `SavedItemDTO`.
+      - `GET /api/saved` → `{"items": [SavedItemDTO, ...]}` newest first.
+      - `POST /api/saved/{id}/caption` → `{"body": str, "generated_at": iso8601}`.
+      - `POST /api/saved/{id}/clip-prompt` → symmetric.
+      - `GET /api/saved/{id}/outputs?kind=caption|clip_prompt` →
+        `{"outputs": [{id, saved_item_id, kind, body, generated_at}, ...]}` newest first.
+      - `DELETE /api/saved/{id}` → 204 on success, 404 if missing.
+
+      ## Hard constraints
+
+      - **Vanilla JS only.** No React, Vue, Svelte, build step, or bundler.
+      - **No new dependencies** in `pyproject.toml` (Playwright is already
+        installed; if you use it, do not bump versions or add new packages).
+      - **Do not modify any non-`static/` or `tests/test_ui.py` files.**
+        In particular: do not edit `src/shopee_th/api/*`, `main.py`,
+        `models/*`, `services/*`, or the existing test files.
+      - **Do not commit secrets or real cookies.** The SPA must work with
+        a placeholder or empty `session_cookie` for the duration of this
+        ticket; the real cookie lands in a follow-up via `make refresh-cookie`.
+      - **Keep the static-files directory layout stable.** FastAPI's
+        `StaticFiles(directory="static", html=True)` mount serves whatever
+        is in `static/`. Don't add a subdir.
+
+      ## Self-verification (do this before reporting back)
+
+      1. `uv run pytest` — must remain green (the existing 76 tests must
+         still pass; your new test should be added/skip-friendly).
+      2. `uv run uvicorn src.shopee_th.main:app` — boot the app, open
+         `http://localhost:8000/` in a browser (or `curl http://localhost:8000/`).
+         Confirm the SPA renders (HTML, not the old `{"status":"ok"}` JSON).
+      3. From the browser DevTools Network tab (or by reading the code),
+         confirm the SPA correctly calls the documented endpoints. Search
+         for one keyword, save an item, generate a caption, copy it.
+      4. Trigger an error path (e.g. send an empty search query) and
+         confirm the UI shows a dismissible banner with the server message,
+         not a silent failure.
+
+      ## Report back
+
+      When done, report:
+      - List of files created/modified.
+      - One-paragraph summary of UI behavior (search flow, save flow,
+        generation flow, error states).
+      - The result of `uv run pytest` (count: passed / failed / skipped).
+      - The result of the self-verification checks.
+    assigned_to: coder
+    verified_by: verifier
+    verify_prompt: |
+      Project root: /Users/lifetofree/Documents/Projects/shopee-research
+
+      Independently re-derive that the SPA in `static/` meets the ticket's
+      acceptance criteria. Do not just re-read the producer's report.
+
+      ## What to check
+
+      1. **Open `static/index.html`, `static/app.js`, `static/styles.css`.**
+         Confirm the three files exist and are coherent (HTML references the
+         JS and CSS by relative path).
+      2. **Open the ticket body** at
+         `.wayfinder/tickets/build-single-page-html-js-frontend.md` (or
+         re-derive the requirements from the spec at `docs/SPEC.md`). For
+         each requirement (search bar + result grid; saved items section;
+         per-item Generate caption/clip-prompt + history; Remove; loading/
+         empty/error states; idempotent save; no login UI; vanilla JS), open
+         the relevant file and confirm it's actually implemented (not just
+         claimed).
+      3. **Spot-check 3 API calls in the JS** by reading the code: confirm
+         the URLs match the documented routes in `src/shopee_th/api/routes.py`,
+         the bodies match the documented request DTOs in
+         `src/shopee_th/api/schemas.py`, and the error path actually
+         reads `detail.error` / `detail.message` from the `ApiError` body.
+      4. **Run `uv run pytest`** from the project root. The existing 76
+         tests must still pass. The producer's `tests/test_ui.py` is
+         allowed to skip with a clear message (Playwright Chromium may not
+         be installed in your env) but must not FAIL.
+      5. **Run `uv run uvicorn src.shopee_th.main:app --port 8765` in the
+         background, `curl -s http://localhost:8000/ | head -50`, then
+         `curl -s http://localhost:8000/api/saved`.** Confirm `/` returns
+         HTML (not the old `{"status":"ok"}` JSON) and `/api/saved` returns
+         `{"items":[]}`. Kill the uvicorn process when done.
+      6. **Confirm no other project files were modified** by the producer:
+         `git status --short` (or `git diff --stat` if committed). The
+         expected deltas are limited to `static/*` and `tests/test_ui.py`.
+      7. **Confirm no new dependencies** were added to `pyproject.toml`.
+         `git diff pyproject.toml uv.lock` should be empty.
+
+      ## Pass / Fail
+
+      PASS only if all 7 checks succeed. Otherwise FAIL with the exact
+      reason (file:line where the requirement is missing or wrong,
+      specific test that broke, etc.) so the next attempt has a clear
+      target.
+    max_retries: 2

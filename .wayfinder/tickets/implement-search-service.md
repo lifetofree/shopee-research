@@ -2,13 +2,13 @@
 name: Implement search service module
 labels: [wayfinder:task]
 status: closed
-assignee: Claude
+assignee: Mavis
 blocked_by: [research-map-data-surfaces, bootstrap-python-project]
 parent: map
 created: 2026-07-16
 claimed: 2026-07-16
 closed: 2026-07-16
-unblocks: [implement-fastapi-http-layer]
+unblocks: [implement-fastapi-http-layer, capture-affiliate-portal-traffic]
 ---
 
 ## Resolution (2026-07-16)

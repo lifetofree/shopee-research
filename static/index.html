@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>shopee-th</title>
+  <meta name="description" content="Search Shopee Affiliate Thailand, save items, generate Thai captions and English clip prompts.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="brand">shopee-th</h1>
+    <p class="tagline">Search · save · generate copy</p>
+  </header>
+
+  <main>
+    <!-- Search section -->
+    <section class="search" aria-label="Search Shopee Affiliate Thailand">
+      <form id="search-form" class="search-form" autocomplete="off">
+        <label for="search-input" class="visually-hidden">Search keyword</label>
+        <input
+          id="search-input"
+          name="query"
+          type="search"
+          placeholder="Search a product (e.g. iphone 15 case)"
+          required
+          minlength="1"
+          maxlength="200"
+          aria-describedby="search-help"
+        >
+        <button type="submit" id="search-button">Search</button>
+      </form>
+      <p id="search-help" class="muted small">Press Enter or click Search. Empty results return an explicit empty state, not a hang.</p>
+      <div id="search-status" class="status" role="status" aria-live="polite" hidden></div>
+    </section>
+
+    <!-- Error banner (hidden by default) -->
+    <div id="error-banner" class="error-banner" role="alert" hidden>
+      <span id="error-message"></span>
+      <button type="button" id="error-dismiss" class="dismiss" aria-label="Dismiss error">×</button>
+    </div>
+
+    <!-- Search results -->
+    <section id="results-section" class="results" aria-label="Search results" hidden>
+      <h2 class="section-title">Results <span id="results-count" class="muted"></span></h2>
+      <ul id="results-grid" class="grid"></ul>
+    </section>
+
+    <!-- Saved items -->
+    <section id="saved-section" class="saved" aria-label="Saved items">
+      <h2 class="section-title">Saved items <span id="saved-count" class="muted"></span></h2>
+      <div id="saved-empty" class="empty muted">No saved items yet. Search above and click Save on anything that looks interesting.</div>
+      <ul id="saved-list" class="saved-list"></ul>
+    </section>
+  </main>
+
+  <!-- Reusable templates (cloned via JS) -->
+  <template id="tpl-result-card">
+    <li class="card">
+      <img class="card-thumb" alt="" loading="lazy">
+      <div class="card-body">
+        <h3 class="card-title"></h3>
+        <div class="card-meta">
+          <span class="price"></span>
+          <span class="sold"></span>
+          <span class="commission"></span>
+        </div>
+        <div class="card-actions">
+          <button type="button" class="btn-save">Save</button>
+          <span class="save-status muted small"></span>
+        </div>
+      </div>
+    </li>
+  </template>
+
+  <template id="tpl-saved-item">
+    <li class="saved-item" data-saved-id="">
+      <div class="saved-head">
+        <img class="saved-thumb" alt="" loading="lazy">
+        <div class="saved-meta">
+          <h3 class="saved-title"></h3>
+          <div class="saved-fields">
+            <span class="price"></span>
+            <span class="sold"></span>
+            <span class="commission"></span>
+          </div>
+        </div>
+        <div class="saved-actions">
+          <button type="button" class="btn-caption">Generate caption</button>
+          <button type="button" class="btn-clip">Generate clip prompt</button>
+          <button type="button" class="btn-remove danger">Remove</button>
+        </div>
+      </div>
+      <div class="saved-outputs">
+        <details class="outputs-caption">
+          <summary>Captions</summary>
+          <ul class="output-list caption-list"></ul>
+        </details>
+        <details class="outputs-clip">
+          <summary>Clip prompts</summary>
+          <ul class="output-list clip-list"></ul>
+        </details>
+      </div>
+      <div class="saved-status muted small" role="status" aria-live="polite"></div>
+    </li>
+  </template>
+
+  <template id="tpl-output-row">
+    <li class="output-row">
+      <pre class="output-body"></pre>
+      <div class="output-meta">
+        <time class="output-time"></time>
+        <button type="button" class="btn-copy">Copy</button>
+      </div>
+    </li>
+  </template>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
