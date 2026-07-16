@@ -141,7 +141,7 @@ def _price_band_hashtag(price: float) -> str:
 
 def _category_hashtag(item: Item) -> str:
     """Best-effort category slug: real Shopee category first, then keyword."""
-    cats = item.raw.get("item_basic", {}).get("categories")
+    cats = (item.raw.get("item_basic") or {}).get("categories")
     if isinstance(cats, list) and cats:
         first = cats[0]
         if isinstance(first, str) and first.strip():
@@ -168,8 +168,13 @@ def _title_word_hashtags(title: str, count: int) -> list[str]:
 
 
 def _brand(item: Item) -> str | None:
-    """Best-effort brand from `item.raw["item_basic"]["brand"]`."""
-    brand = item.raw.get("item_basic", {}).get("brand")
+    """Best-effort brand from `item.raw["item_basic"]["brand"]`.
+
+    `item_basic` may be explicitly `null` in the modern storefront schema
+    (the live `/api/v4/search/search_items` sets it to null), so `or {}`
+    guards the chained `.get()`.
+    """
+    brand = (item.raw.get("item_basic") or {}).get("brand")
     if isinstance(brand, str) and brand.strip():
         return brand.strip()
     return None
