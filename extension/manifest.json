@@ -3,6 +3,7 @@
   "name": "Shopee TH Capture",
   "version": "0.1.0",
   "description": "Captures Shopee search results from your real browser and saves them to the local Shopee TH app. Bypasses no anti-bot — reads data the page already fetched.",
+  "minimum_chrome_version": "111",
   "permissions": ["storage", "activeTab"],
   "host_permissions": [
     "https://shopee.co.th/*",
@@ -19,19 +20,25 @@
   "content_scripts": [
     {
       "matches": ["https://shopee.co.th/*"],
-      "js": ["shared/parse.js", "content/storefront.js"],
+      "js": ["content/storefront.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://shopee.co.th/*"],
+      "js": ["shared/parse.js", "content/storefront_relay.js"],
       "run_at": "document_start"
     },
     {
       "matches": ["https://affiliate.shopee.co.th/*"],
-      "js": ["shared/parse.js", "content/affiliate.js"],
-      "run_at": "document_start"
-    }
-  ],
-  "web_accessible_resources": [
+      "js": ["content/affiliate.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
     {
-      "resources": ["shared/inject.js"],
-      "matches": ["https://shopee.co.th/*", "https://affiliate.shopee.co.th/*"]
+      "matches": ["https://affiliate.shopee.co.th/*"],
+      "js": ["shared/parse.js", "content/affiliate_relay.js"],
+      "run_at": "document_start"
     }
   ]
 }

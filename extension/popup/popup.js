@@ -38,18 +38,22 @@
     }
   }
 
-  // --- server health (via background so it carries host_permissions) ----
+  // --- server health (direct fetch — popup has host_permission for 127.0.0.1) ---
   async function pingServer() {
     els.serverStatus.textContent = "checking…";
     els.serverStatus.className = "value checking";
-    const resp = await chrome.runtime.sendMessage({ kind: "PING_SERVER" });
-    if (resp && resp.ok) {
-      els.serverStatus.textContent = "online";
-      els.serverStatus.className = "value ok";
-    } else {
-      els.serverStatus.textContent = "offline (run `make run`)";
-      els.serverStatus.className = "value bad";
+    try {
+      const resp = await fetch(SERVER_URL + "/health", { method: "GET" });
+      if (resp.ok) {
+        els.serverStatus.textContent = "online";
+        els.serverStatus.className = "value ok";
+        return;
+      }
+    } catch {
+      // server not running / refused
     }
+    els.serverStatus.textContent = "offline (run `make run`)";
+    els.serverStatus.className = "value bad";
   }
 
   // --- toggle -----------------------------------------------------------
