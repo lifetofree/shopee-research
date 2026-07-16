@@ -43,7 +43,7 @@ A local FastAPI web app (Python) on `localhost`, single-page HTML/JS UI, authent
 
 In-scope fog — questions we expect, but can't phrase sharply yet:
 
-- **Surface B (affiliate portal)** — exact endpoint URLs, GraphQL/REST shape, response JSON for a typical search. Becomes specifiable via [`capture-affiliate-portal-traffic`](tickets/capture-affiliate-portal-traffic.md) which is now an open ticket.
+- **Surface B (affiliate portal)** — exact endpoint URLs, GraphQL/REST shape, response JSON for a typical search. The capture tooling ([`capture-affiliate-portal-traffic`](tickets/capture-affiliate-portal-traffic.md)) is built and wired (`make capture-affiliate-traffic`), but still needs a human to run it against a real logged-in account — `docs/research/affiliate-observed-traffic.json` doesn't exist yet, so this is still open/inference-only.
 - Whether the affiliate portal returns commission as a single `commissionRate` percent, or a richer `sellerCommissionRate` + `shopeeCommissionRate` + `commission` triple. Affects the `Item` Pydantic model and saved-items schema.
 - Exact rate-limit numbers (anecdotal ≤1 req/s with backoff on `error: 90309999` is the working assumption).
 - Login-time captcha: presence and form. Surfaces empirically from `implement-cookie-refresh-helper`.

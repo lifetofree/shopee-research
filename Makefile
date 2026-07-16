@@ -49,7 +49,8 @@ refresh-cookie:
 	$(UV) run python scripts/refresh_cookie.py
 
 capture-affiliate-traffic:
-	@echo "TODO(capture-affiliate-portal-traffic): implement in the dedicated ticket."
+	$(UV) run playwright install chromium
+	$(UV) run python scripts/capture_affiliate_traffic.py
 
 clean:
 	rm -rf .pytest_cache .ruff_cache .mypy_cache .uv __pycache__ */__pycache__ */*/__pycache__ *.egg-info build dist

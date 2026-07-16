@@ -2,11 +2,37 @@
 name: Capture affiliate-portal hidden API traffic
 labels: [wayfinder:task]
 status: open
-assignee: unassigned
+assignee: Claude
 blocked_by: [research-map-data-surfaces, implement-cookie-refresh-helper]
 parent: map
 created: 2026-07-16
+claimed: 2026-07-16
 ---
+
+## Progress (2026-07-16) — tooling built, empirical capture still pending
+
+**Status stays `open`**, deliberately not `closed`: the ticket's actual deliverable is the *data file* (`docs/research/affiliate-observed-traffic.json`), not the script — and that file doesn't exist yet. Producing it requires a real, logged-in Shopee Affiliate TH session driven by a human (login, possibly a captcha, then a manual search inside the portal), which this session has no way to do — no account, no ability to interactively complete a live login. So the tool is ready; the actual capture is not done, and Surface B in `services/search.py` is still unconfirmed best-effort scaffolding.
+
+**Asset:** `scripts/capture_affiliate_traffic.py`, wired into `make capture-affiliate-traffic` (also runs `playwright install chromium` first, same as `refresh-cookie`). `uv run pytest` → 104/104 green (9 new in `tests/test_capture_affiliate_traffic.py`).
+
+**Files created/changed:**
+
+- `scripts/capture_affiliate_traffic.py` — opens one headed Chromium context to `affiliate.shopee.co.th`, attaches `page.on("request"/"response")` listeners filtered to that host (`_is_target_host`, matches exact host + subdomains), and waits up to 60s (or an Enter keypress, whichever comes first — a normal stop condition here, not a failure like the login gate in `refresh_cookie.py`) while the **user** logs in and drives a real search inside the browser themselves. The portal's search UI (selectors, URL, DOM) is explicitly unconfirmed per `docs/research/data-surfaces.md` §3.2/§3.3, so there's nothing for the script to click through on the user's behalf — it only listens and records. Each matched request/response pair is written as `{method, url, headers, post_data, status, response_headers, response_body_truncated, truncated}` to `docs/research/affiliate-observed-traffic.json` (plain overwrite on rerun — trivially idempotent). Response bodies are truncated to 4096 UTF-8 bytes (`_truncate_body`, byte-safe against multi-byte cutoffs). `main()` exits non-zero with a hint if fewer than 3 requests were captured, matching the ticket's "≥3 distinct request types" acceptance bar.
+- `Makefile` — `capture-affiliate-traffic` target now runs `playwright install chromium` then the script, replacing the TODO stub.
+- `tests/test_capture_affiliate_traffic.py` — 9 unit tests for the three pure, Playwright-free helpers: `_is_target_host` (exact host, subdomain, rejects other hosts including a decoy domain-as-path trick), `_truncate_body` (under-limit passthrough, over-limit truncation, UTF-8 byte-safety with multi-byte characters), `_make_entry` (shape matches the ticket's documented fields, truncation flag, missing/non-text response body).
+
+**Decisions worth surfacing:**
+
+- **The script does not attempt the search itself** — unlike a scenario where selectors are known, the affiliate portal's DOM is explicitly unconfirmed (research marks Surface B as open/inference-only). Automating clicks against unknown selectors would be guesswork layered on guesswork; the ticket's own acceptance bar just needs *a* real recorded session, so a human driving the browser while the script listens is the correct scope for this iteration.
+- **No cookie-jar reuse from `refresh_cookie.py`** — the ticket suggests reusing the same browser/cookie jar "would be ideal," but injecting persisted cookies into a fresh Chromium launch risks the exact fingerprint mismatch (`error: 90309999`) the research write-up warns against. A fresh interactive login, same as `refresh_cookie.py`'s own pattern, avoids that risk entirely at the cost of one extra login.
+- **Exit code reflects the request-count acceptance bar** (`< 3` → exit 1) so `make capture-affiliate-traffic` fails loudly if the capture window closed before enough traffic was seen, rather than silently producing a useless near-empty dump.
+
+**What's left for this ticket to actually close:**
+
+1. Run `make capture-affiliate-traffic` with a real, logged-in Shopee Affiliate TH account.
+2. Log in when the browser opens, navigate to the portal's search/offers page, run a real search term.
+3. Confirm `docs/research/affiliate-observed-traffic.json` has ≥3 distinct request types and at least one matches the inferred `productOfferV2`/`product_search` GraphQL shape.
+4. Once confirmed, a follow-up pass updates `services/search.py`'s Surface B implementation (`_fetch_surface_b` / `AFFILIATE_GRAPHQL_QUERY`) against the *real* contract instead of the inferred one, and this ticket can move to `closed`.
 
 ## Question
 
