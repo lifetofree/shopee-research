@@ -48,7 +48,7 @@ from shopee_th.models.repository import (
     to_saved_dto,
 )
 from shopee_th.services.generation import OutputGenerator
-from shopee_th.services.search import MAX_LIMIT, SearchError, search
+from shopee_th.services.search import DEFAULT_USER_AGENT, MAX_LIMIT, SearchError, search
 from shopee_th.services.transport import Transport
 
 router = APIRouter(prefix="/api", tags=["api"])
@@ -83,6 +83,10 @@ async def search_endpoint(
             query=body.query,
             limit=limit,
             session_cookie=settings.session_cookie,
+            # Falls back to the hardcoded default only for a cookie-less/
+            # anonymous session; a real session_cookie is fingerprint-bound
+            # to the browser that produced it (see Settings.user_agent).
+            user_agent=settings.user_agent or DEFAULT_USER_AGENT,
         )
     except SearchError as e:
         raise HTTPException(

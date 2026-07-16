@@ -104,6 +104,11 @@ def run() -> None:
             session_cookie = _cookie_header(context, SHOPEE_URL)
             if not session_cookie:
                 raise RefreshCookieError(f"No cookies captured for {SHOPEE_URL}.")
+            # Shopee binds session_cookie to this exact browser's UA (research
+            # §2.5) — persist it so the app replays requests with a matching
+            # fingerprint instead of a hardcoded default that drifts out of
+            # sync with Playwright's bundled Chromium version.
+            user_agent = page.evaluate("() => navigator.userAgent")
 
             page.goto(AFFILIATE_URL)
             _wait_for_enter(
@@ -124,6 +129,7 @@ def run() -> None:
             "SHOPEE_TH_SESSION_COOKIE": session_cookie,
             "SHOPEE_TH_AFFILIATE_COOKIE": affiliate_cookie,
             "SHOPEE_TH_AFFILIATE_ID": "",
+            "SHOPEE_TH_USER_AGENT": user_agent,
         },
     )
     ENV_PATH.write_text(updated)

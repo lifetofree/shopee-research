@@ -34,6 +34,18 @@ class Settings(BaseSettings):
             "Populated by `make refresh-cookie`."
         ),
     )
+    user_agent: str = Field(
+        default="",
+        description=(
+            "The exact User-Agent string of the browser that produced "
+            "session_cookie. Populated by `make refresh-cookie`. Shopee binds "
+            "session cookies to a browser fingerprint (docs/research/data-surfaces.md "
+            "§2.5); a mismatched UA on a real cookie is rejected with `error: "
+            "90309999` even though the cookie itself is valid. Empty falls back "
+            "to services.search.DEFAULT_USER_AGENT, which only works for "
+            "anonymous/cold cookies, not a real logged-in session."
+        ),
+    )
 
     # --- Shopee affiliate portal (Surface B) ---
     affiliate_cookie: str = Field(

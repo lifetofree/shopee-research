@@ -86,6 +86,36 @@ async def test_search_returns_items_with_canned_transport(
 
 
 @pytest.mark.asyncio
+async def test_search_uses_configured_user_agent_not_hardcoded_default() -> None:
+    """Regression: Settings.user_agent must reach the outgoing Surface A request.
+
+    A real session_cookie is bound to the browser fingerprint that produced
+    it (docs/research/data-surfaces.md §2.5) -- replaying it with a stale
+    hardcoded User-Agent gets rejected with `error: 90309999` even though
+    the cookie itself is valid. This exercises settings.user_agent -> the
+    actual request headers with a distinctive value, the same class of
+    "config exists but isn't wired to the call site" bug that broke
+    SHOPEE_TH_GENERATOR earlier in this project.
+    """
+    distinctive_ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Chrome/149.0.0.0 Safari/537.36"
+    settings = Settings(
+        session_cookie="SPC=test-cookie",
+        user_agent=distinctive_ua,
+        db_url="sqlite+aiosqlite:///:memory:",
+    )
+    noop = NoopTransport()
+    noop.push(_surface_a_ok(_item("111")))
+    application = create_app(settings=settings, transport=noop)
+
+    transport = httpx.ASGITransport(app=application)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as c:
+        await c.post("/api/search", json={"query": "iphone", "limit": 5})
+
+    get_call = next(call for call in noop.calls if call["method"] == "GET")
+    assert get_call["headers"]["User-Agent"] == distinctive_ua
+
+
+@pytest.mark.asyncio
 async def test_search_empty_query_returns_400_via_pydantic(
     client: httpx.AsyncClient,
 ) -> None:
