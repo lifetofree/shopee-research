@@ -1,20 +1,25 @@
-"""Search service: two-leg merge of Shopee storefront (A) + affiliate portal (B).
+"""Search service: Shopee storefront search (Surface A).
 
-Per the wayfinder map and `implement-search-service` ticket:
+Per the wayfinder map and `implement-search-service` ticket, this originally
+scaffolded a two-leg merge with the affiliate portal (Surface B) for
+commission. `capture-affiliate-portal-traffic` confirmed the real Surface B
+contract (`GET /api/v3/offer/product/list`) but also found it's **not
+server-side replayable**: every request needs `x-sap-sec` /
+`af-ac-enc-sz-token` / `x-sap-ri`, headers generated per-request by Shopee's
+client-side anti-bot SDK running inside a real, non-automated browser. Plain
+`httpx` (or an in-page `fetch()` from a CDP-attached browser) gets rejected
+with `error: 90309999` even with a valid cookie. See
+`docs/research/data-surfaces.md` §3.6 for the full writeup.
 
-- **Surface A** (closed) is `https://shopee.co.th/api/v4/search/search_items`
-  with the documented headers/params. Provides `image`, `price`, `sold`.
-- **Surface B** (open, best-effort) is the affiliate portal. The actual
-  endpoint, GraphQL query, and response shape are pending
-  `capture-affiliate-portal-traffic`. This module implements the **scaffolding**
-  — a single POST attempt with cookie + a placeholder GraphQL body — and
-  silently treats any failure as "no commissions", per the ticket:
-  > If the affiliate leg raises `NotImplementedError` or returns no data, the
-  > function still returns the Surface A rows.
+**Decision: this app ships on Surface A only.** `Item.commission` is always
+`None`. A future architecture (most promising: a browser extension running
+in the user's real Chrome, where the anti-bot SDK signs requests naturally)
+could add commission back in — that's a different app shape, not a second
+`Transport` call, so there's no merge scaffolding here to plug it into.
 
-The module depends only on `Transport` (in `services.transport`) and Pydantic
-DTOs. It does **not** import FastAPI, app config, or the DB layer — making
-it library-importable and trivially unit-testable via `NoopTransport`.
+This module depends only on `Transport` (in `services.transport`) and
+Pydantic DTOs. It does **not** import FastAPI, app config, or the DB layer —
+making it library-importable and trivially unit-testable via `NoopTransport`.
 """
 
 from __future__ import annotations
@@ -23,12 +28,9 @@ import asyncio
 from typing import Any
 
 from shopee_th.models.domain import Item, SearchErrorPayload
-from shopee_th.services.transport import Transport, TransportResponse
+from shopee_th.services.transport import Transport
 
-# Surface A is closed. Surface B is open; constants are placeholders that
-# `capture-affiliate-portal-traffic` will replace.
 SURFACE_A_URL = "https://shopee.co.th/api/v4/search/search_items"
-SURFACE_B_URL = "https://affiliate.shopee.co.th/graphql"  # placeholder
 
 # Linear backoff for the single retry. 0.5s keeps the call wall-clock under
 # the typical 10s timeout while still giving upstream a chance to recover.
@@ -94,32 +96,21 @@ async def search(
     limit: int = MAX_LIMIT,
     session_cookie: str = "",
     user_agent: str = DEFAULT_USER_AGENT,
-    affiliate_transport: Transport | None = None,
-    affiliate_cookie: str = "",
-    affiliate_leg: bool = True,
-    affiliate_query: str = "",
 ) -> list[Item]:
     """Search Shopee Affiliate TH for products matching `query`.
 
-    The HTTP layer (later) is responsible for reading `.env` and constructing
-    the Transport; this function is pure logic.
+    The HTTP layer is responsible for reading `.env` and constructing the
+    Transport; this function is pure logic.
+
+    Surface A only — see the module docstring for why. `Item.commission` is
+    always `None`.
 
     Args:
-        transport: the Transport to use for both surfaces (Surface A
-            required; Surface B optional — if `affiliate_transport` is not
-            given, the merge is skipped).
+        transport: the Transport to use for Surface A.
         query: the search keyword. Empty / whitespace-only returns `[]`.
         limit: 1..MAX_LIMIT. Clamped silently.
         session_cookie: the `shopee.co.th` cookie string from `.env`.
         user_agent: override the default desktop Chrome UA.
-        affiliate_transport: optional second Transport for Surface B. If
-            `None`, no Surface B call is made and all `Item.commission`
-            values stay `None`.
-        affiliate_cookie: the `affiliate.shopee.co.th` cookie string.
-        affiliate_leg: feature flag; set `False` to skip Surface B entirely
-            even if `affiliate_transport` is provided.
-        affiliate_query: optional extra string passed to Surface B's
-            placeholder GraphQL query (defaults to `query`).
 
     Returns:
         A list of `Item` rows, newest-first per Shopee's response order. Empty
@@ -138,29 +129,13 @@ async def search(
 
     limit = max(MIN_LIMIT, min(int(limit), MAX_LIMIT))
 
-    items = await _surface_a_search(
+    return await _surface_a_search(
         transport,
         query=query,
         limit=limit,
         session_cookie=session_cookie,
         user_agent=user_agent,
     )
-
-    if affiliate_leg and affiliate_transport is not None:
-        # Best-effort merge. Any failure (including NotImplementedError from
-        # the capture-ticket placeholder) is logged and swallowed.
-        try:
-            await _merge_commissions(
-                items,
-                affiliate_transport,
-                affiliate_cookie=affiliate_cookie,
-                query=affiliate_query or query,
-            )
-        except Exception:
-            # Surface B is best-effort. Continue with Surface A items.
-            pass
-
-    return items
 
 
 # --- Surface A ------------------------------------------------------------
@@ -315,79 +290,6 @@ def _parse_surface_a_item(raw: dict[str, Any]) -> Item:
         image=image,
         price=float(max(0, price_thb)),
         sold=max(0, sold),
-        commission=None,  # Surface A doesn't expose commission
+        commission=None,  # Surface A doesn't expose commission; see module docstring
         raw=raw,
     )
-
-
-# --- Surface B (best-effort scaffolding) ----------------------------------
-
-
-async def _merge_commissions(
-    items: list[Item],
-    transport: Transport,
-    *,
-    affiliate_cookie: str,
-    query: str,
-) -> None:
-    """Attempt to fill `Item.commission` for each row via the affiliate portal.
-
-    The endpoint URL, GraphQL query, and response shape are pending
-    `capture-affiliate-portal-traffic`. This scaffolding makes the call
-    with a placeholder GraphQL body and a tolerant parser. If the response
-    doesn't match the expected shape, nothing is filled and the caller
-    proceeds with the Surface A items.
-    """
-    if not items:
-        return
-    if not affiliate_cookie:
-        return
-
-    headers = {
-        "cookie": affiliate_cookie,
-        "content-type": "application/json",
-    }
-    # Placeholder GraphQL body — the capture ticket will replace this with
-    # the observed `productOfferV2` / `product_search`-style query.
-    body = {
-        "query": (
-            "query SearchProducts($keyword: String!) { "
-            "searchProducts(keyword: $keyword) { "
-            "itemId commissionRate productName shopName imageUrl "
-            "} }"
-        ),
-        "variables": {"keyword": query},
-    }
-
-    try:
-        resp = await transport.post(SURFACE_B_URL, headers=headers, json=body)
-    except Exception:
-        # Best-effort. Any transport-level failure → no commissions.
-        return
-
-    if resp.status != 200:
-        return
-
-    data = resp.json.get("data", {}) if isinstance(resp.json, dict) else {}
-    products = data.get("searchProducts") if isinstance(data, dict) else None
-    if not isinstance(products, list):
-        # Shape mismatch — capture ticket hasn't filled the contract yet.
-        return
-
-    # Index by itemId for O(1) lookup.
-    by_id: dict[str, float] = {}
-    for p in products:
-        if not isinstance(p, dict):
-            continue
-        item_id = p.get("itemId")
-        rate = p.get("commissionRate")
-        if item_id is None or rate is None:
-            continue
-        try:
-            by_id[str(item_id)] = float(rate)
-        except (TypeError, ValueError):
-            continue
-
-    for item in items:
-        if item.source_id in by_id:
-            item.commission = by_id[item.source_id]

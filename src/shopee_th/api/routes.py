@@ -83,7 +83,6 @@ async def search_endpoint(
             query=body.query,
             limit=limit,
             session_cookie=settings.session_cookie,
-            affiliate_cookie=settings.affiliate_cookie,
         )
     except SearchError as e:
         raise HTTPException(

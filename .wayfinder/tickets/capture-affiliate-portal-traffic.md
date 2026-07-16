@@ -29,9 +29,11 @@ closed: 2026-07-16
   - Real Chrome via `--remote-debugging-port` (CDP attach) → softer "Loading Issue" error wall.
 - **Only a plain, manually-opened real Chrome worked.** The deliverable came from the user exporting a HAR file via DevTools in their everyday Chrome. `scripts/capture_affiliate_traffic.py` was extended (stop-file signal instead of stdin-EOF, gzip body decompression, resilient `goto`, system-Chrome-attach mode) but its automated path is now understood to be unviable for *this* portal; the manual HAR route is the documented method. Future captures should reuse that route.
 
-**Open sub-question (flagged, not blocking):** the captured session listed products by tab (`list_type=0`); a `keyword` param was **not** observed. Before the search-service Surface B re-implementation finalises, confirm whether `/api/v3/offer/product/list` accepts a `keyword`, or whether keyword search is a separate endpoint (one more manual capture with a keyword typed answers this). See `data-surfaces.md` §3.4.
+**Keyword-search sub-question — RESOLVED (second capture, 2026-07-16):** `/api/v3/offer/product/list` **does** accept a `keyword` param (`?list_type=0&keyword=<term>&sort_type=1&page_offset=0&page_limit=20&client_type=1`, confirmed by capturing the portal's own search box). See `data-surfaces.md` §3.4.
 
-**Next:** re-implement Surface B in `services/search.py` (`_fetch_surface_b` + `AFFILIATE_GRAPHQL_QUERY`) against this REST contract, replacing the inferred GraphQL scaffolding.
+**Superseding finding (2026-07-16, same day) — Surface B is NOT server-side replayable:** every request to `/api/v3/offer/product/list` requires three headers (`x-sap-sec`, `af-ac-enc-sz-token`, `x-sap-ri`) generated **per-request by Shopee's client-side anti-bot SDK** running inside a real, non-automated browser. Plain `httpx` with a valid cookie gets `error: 90309999`; an in-page `fetch()` from a CDP-attached browser is *also* blocked (the SDK detects the automation context at the token-generation step). See `data-surfaces.md` §3.6 for the full writeup.
+
+**Decision: ship on Surface A only.** `services/search.py`'s Surface B scaffolding (the inferred-GraphQL `_merge_commissions`/`SURFACE_B_URL`) was removed rather than re-implemented against the now-confirmed REST contract — a REST rewrite would hit the exact same anti-bot wall, so it would still never work server-side. `Item.commission` is always `None`; the UI already renders that gracefully (drops the commission badge). The confirmed REST contract stays documented in `data-surfaces.md` §3.2 and `affiliate-observed-traffic.json` for a future non-server-side architecture (most promising: a browser extension in the user's real Chrome, where the anti-bot SDK signs requests naturally).
 
 ---
 

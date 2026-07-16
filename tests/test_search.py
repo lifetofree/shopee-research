@@ -1,11 +1,12 @@
 """Unit tests for `services.search` driven by `NoopTransport`.
 
-Coverage targets (per the ticket body):
-- happy path: Surface A returns N items
+Surface A only (see the module docstring in `services/search.py` for why
+Surface B was dropped — it's confirmed non-server-side-replayable).
+
+Coverage targets:
+- happy path: Surface A returns N items, `commission` always `None`
 - empty result: Surface A returns `items: []` → `search()` returns `[]`
-- two-leg fusion: A returns N items, B returns commissions for a subset
-- Surface B unavailable: B raises, A result still returned
-- 90309999 → SearchError with guidance (no retry, no commission path)
+- 90309999 → SearchError with guidance (no retry)
 - transient error_msg → single retry succeeds
 - 5xx → SearchError after one retry
 - timeout → SearchError after one retry
@@ -107,100 +108,6 @@ async def test_empty_result_returns_empty_list() -> None:
     )
     items = await search(transport, query="no-such-product", session_cookie="SPC=abc")
     assert items == []
-
-
-@pytest.mark.asyncio
-async def test_two_leg_fusion_fills_commission_from_surface_b() -> None:
-    surface_a = NoopTransport(
-        default_response=_surface_a_ok(
-            _surface_a_item(111),
-            _surface_a_item(222, title="Another"),
-            _surface_a_item(333, title="Third"),
-        )
-    )
-    surface_b = NoopTransport(
-        default_response=TransportResponse(
-            status=200,
-            json={
-                "data": {
-                    "searchProducts": [
-                        {"itemId": 111, "commissionRate": "0.06"},
-                        {"itemId": 333, "commissionRate": "0.12"},
-                    ]
-                }
-            },
-        )
-    )
-    items = await search(
-        surface_a,
-        query="iphone",
-        session_cookie="SPC=abc",
-        affiliate_transport=surface_b,
-        affiliate_cookie="SPC_AFF=xyz",
-    )
-    by_id = {it.source_id: it.commission for it in items}
-    assert by_id["111"] == pytest.approx(0.06)
-    assert by_id["222"] is None  # not in Surface B → stays None
-    assert by_id["333"] == pytest.approx(0.12)
-    # Only one POST to Surface B (no retry).
-    assert sum(1 for c in surface_b.calls if c["method"] == "POST") == 1
-
-
-@pytest.mark.asyncio
-async def test_surface_b_unavailable_swallows_error_and_keeps_a_items() -> None:
-    surface_a = NoopTransport(
-        default_response=_surface_a_ok(_surface_a_item(111), _surface_a_item(222))
-    )
-
-    class _SurfaceB(NoopTransport):
-        async def post(self, *args, **kwargs):  # type: ignore[override]
-            raise RuntimeError("Surface B transport blew up")
-
-    surface_b = _SurfaceB()
-    items = await search(
-        surface_a,
-        query="iphone",
-        session_cookie="SPC=abc",
-        affiliate_transport=surface_b,
-        affiliate_cookie="SPC_AFF=xyz",
-    )
-    assert len(items) == 2
-    assert all(it.commission is None for it in items)
-
-
-@pytest.mark.asyncio
-async def test_surface_b_not_implemented_does_not_break_search() -> None:
-    surface_a = NoopTransport(
-        default_response=_surface_a_ok(_surface_a_item(111))
-    )
-    surface_b = NoopTransport(
-        default_response=TransportResponse(status=200, json={"data": {"searchProducts": None}})
-    )
-    items = await search(
-        surface_a,
-        query="iphone",
-        session_cookie="SPC=abc",
-        affiliate_transport=surface_b,
-        affiliate_cookie="SPC_AFF=xyz",
-    )
-    assert len(items) == 1
-    assert items[0].commission is None  # B returned no usable data
-
-
-@pytest.mark.asyncio
-async def test_affiliate_leg_false_skips_surface_b() -> None:
-    surface_a = NoopTransport(default_response=_surface_a_ok(_surface_a_item(111)))
-    surface_b = NoopTransport()
-    items = await search(
-        surface_a,
-        query="iphone",
-        session_cookie="SPC=abc",
-        affiliate_transport=surface_b,
-        affiliate_cookie="SPC_AFF=xyz",
-        affiliate_leg=False,
-    )
-    assert len(items) == 1
-    assert surface_b.calls == []  # B never called
 
 
 @pytest.mark.asyncio
