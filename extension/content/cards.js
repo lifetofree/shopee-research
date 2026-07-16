@@ -44,7 +44,10 @@
     });
   }
 
-  /** Read product data from a card's DOM. Returns an Item-shaped object. */
+  /** Read product data from a card's DOM, enriched by the API cache if present.
+   *  The API response (cached by affiliate_relay.js) carries richer fields than
+   *  the card DOM — real sold count, full price, clean image id — so we merge
+   *  cached values over the DOM-read values where available. */
   function readCard(card) {
     const anchor = card.querySelector('a[href*="/offer/product_offer/"]');
     if (!anchor) return null;
@@ -55,19 +58,24 @@
     if (!m) return null;
     const itemid = m[1];
 
+    // DOM-read values (always available — this is what the user sees).
     const title = textOf(card, ".ItemCard__name") || "";
     const priceText = textOf(card, ".ItemCardPrice__wrap .price");
     const price = parsePrice(priceText);
     const commission = parseCommission(textOf(card, ".commRate"));
     const imageId = readImageId(card);
 
+    // API-cached values (richer, if the list response was intercepted).
+    const cached = (window.__ShopeeTHCache__ && window.__ShopeeTHCache__.get(itemid)) || null;
+
+    // Prefer cached (structured) data; fall back to DOM-read values.
     return {
-      source_id: `.${itemid}`, // shopid unknown from DOM; itemid is the key
-      title,
-      image: imageId ? IMAGE_PREFIX + imageId : null,
-      price,
-      sold: null, // not shown on affiliate cards in the captured DOM
-      commission,
+      source_id: cached ? cached.source_id : `.${itemid}`,
+      title: (cached && cached.title) || title,
+      image: (cached && cached.image) || (imageId ? IMAGE_PREFIX + imageId : null),
+      price: cached && cached.price != null ? cached.price : price,
+      sold: cached ? cached.sold : null, // DOM has no sold count; cache is the only source
+      commission: cached && cached.commission != null ? cached.commission : commission,
       raw: { itemid, href, surface: "affiliate" },
     };
   }

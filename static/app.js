@@ -167,8 +167,10 @@
     return `฿${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
   }
 
-  /** Format sold count in compact form: `1.2K`, `12K`, `1,234`, or `0`. */
+  /** Format sold count in compact form: `1.2K`, `12K`, `1,234`, `0`, or `—`
+   *  when the count is genuinely unknown (null/undefined). */
   function formatSold(sold) {
+    if (sold == null) return "—"; // unknown, not zero — don't mislead with "0 sold"
     const n = Number(sold) || 0;
     if (n >= 1000) {
       if (n < 10000) return `${(n / 1000).toFixed(1)}K sold`;
