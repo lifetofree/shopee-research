@@ -181,7 +181,11 @@ def _brand(item: Item) -> str | None:
 
 
 def _caption_body(item: Item) -> str:
-    """Build the Thai body (≤ CAPTION_BODY_MAX). Returns empty string on no data."""
+    """Build the Thai body (≤ CAPTION_BODY_MAX). Returns empty string on no data.
+
+    Note: hashtags (including #ShopeeTH) are appended separately by
+    `_all_hashtags` — do NOT put #ShopeeTH here, or it appears twice.
+    """
     title = (item.title or "").strip() or _HASHTAG_FALLBACK_TITLE
     brand = _brand(item)
     parts: list[str] = [f"🔥 {title}"]
@@ -189,7 +193,7 @@ def _caption_body(item: Item) -> str:
         parts.append(f"แบรนด์ {brand}")
     parts.append(f"ราคา {_format_price(item.price)}")
     parts.append(_format_sold(item.sold))
-    parts.append("ส่งฟรี #ShopeeTH")
+    parts.append("ส่งฟรี")
     body = " | ".join(parts)
     return body[:CAPTION_BODY_MAX]
 
