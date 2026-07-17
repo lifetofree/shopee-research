@@ -286,3 +286,38 @@ def test_factory_unknown_value_falls_back_to_stub(monkeypatch: pytest.MonkeyPatc
     monkeypatch.setenv("SHOPEE_TH_GENERATOR", "definitely-not-a-real-value")
     gen = get_generator()
     assert isinstance(gen, TemplateGenerator)
+
+
+def test_factory_llm_uses_explicit_gemini_kwargs_over_environ(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Regression: explicit gemini_api_key/model must win over os.environ.
+
+    create_app() passes settings.gemini_api_key/gemini_model explicitly
+    because pydantic-settings loads those from `.env` without touching
+    os.environ -- a `.env`-only key was previously invisible here (the same
+    bug class that once broke SHOPEE_TH_GENERATOR), silently degrading
+    every `llm` generation call to the template with no visible error.
+    """
+    monkeypatch.setenv("SHOPEE_TH_GEMINI_API_KEY", "environ-key")
+    monkeypatch.setenv("SHOPEE_TH_GEMINI_MODEL", "environ-model")
+
+    gen = get_generator("llm", gemini_api_key="explicit-key", gemini_model="explicit-model")
+
+    assert isinstance(gen, LLMGenerator)
+    assert gen._api_key == "explicit-key"
+    assert gen._model == "explicit-model"
+
+
+def test_factory_llm_falls_back_to_environ_when_no_explicit_kwargs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Direct env-var usage (no Settings involved) must keep working."""
+    monkeypatch.setenv("SHOPEE_TH_GEMINI_API_KEY", "environ-key")
+    monkeypatch.setenv("SHOPEE_TH_GEMINI_MODEL", "environ-model")
+
+    gen = get_generator("llm")
+
+    assert isinstance(gen, LLMGenerator)
+    assert gen._api_key == "environ-key"
+    assert gen._model == "environ-model"

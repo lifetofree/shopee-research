@@ -11,6 +11,8 @@ parent: .wayfinder/map.md
 
 > Synthesized from `.wayfinder/map.md` and the 10 tickets under `.wayfinder/tickets/`. This is the spec; tickets remain the unit-of-work breakdown for individual sessions.
 
+> **Amendment (2026-07-16): architecture superseded — cookie replay is dead, extension ships; LLM generation is live, not deferred.** Empirically confirmed (`docs/research/data-surfaces.md` §2.7, overriding §2.3, plus §3.6): Shopee hardened *both* Surface A and Surface B with a client-side anti-bot token (`x-sap-sec`) that a server-side `httpx` replay cannot produce, no matter how well the cookie/User-Agent are matched. **Neither surface is server-side replayable.** The app was re-architected around a Chrome extension (`extension/`, Manifest V3) that intercepts Shopee's own API responses inside the user's real, authenticated browser tab and relays parsed data to this same local FastAPI server via `fetch`; the server's role is now persistence + caption generation only, not search. Separately, a real Google Gemini-backed `LLMGenerator` shipped (`SHOPEE_TH_GENERATOR=llm`) — every "No LLM client this iteration" / "`NotImplementedError`" claim below is stale. The sections below are kept for their still-accurate persistence/generation/DTO contracts; treat anything describing cookie-replay search or a stub-only `LLMGenerator` as historical, not current.
+
 ---
 
 ## Problem Statement
@@ -99,7 +101,7 @@ A comprehensive enumeration. Each story is a contract the spec promises.
 - **httpx** (async) for Surface A; **Playwright (Python)** for the cookie helper and Surface B fallback.
 - **pydantic-settings** for env config; **python-dotenv** to load `.env`.
 - **pytest** + **pytest-asyncio** for tests.
-- No LLM client in this iteration; the `LLMGenerator` stub is a `NotImplementedError` placeholder.
+- ~~No LLM client in this iteration; the `LLMGenerator` stub is a `NotImplementedError` placeholder.~~ **Superseded — see the amendment at the top of this doc.** `LLMGenerator` calls Google Gemini (`gemini-2.5-flash`, free tier) for real; `SHOPEE_TH_GENERATOR=llm` activates it, falling back to `TemplateGenerator` output on any error.
 - No front-end framework — vanilla HTML/CSS/JS, no build step.
 
 ### Folder layout
@@ -395,7 +397,7 @@ Acceptance: `docs/research/affiliate-observed-traffic.json` exists, contains ≥
 
 Ruled out for this iteration (redraw the destination before re-opening these):
 
-- **Real LLM-backed caption / clip-prompt generation** — the `LLMGenerator` skeleton raises `NotImplementedError`. A follow-up map fills it in. Switching the env var to `llm` is the only change required at the call site.
+- ~~Real LLM-backed caption / clip-prompt generation~~ — **shipped, no longer out of scope.** See the amendment at the top of this doc.
 - **Pagination UI and sort selector** on search results — default = first page, default relevance.
 - **Multi-account / multi-locale** support.
 - **Auto-refresh** of saved items' price/sold data.

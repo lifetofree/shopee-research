@@ -352,7 +352,12 @@ class LLMGenerator:
 # --- Factory ----------------------------------------------------------------
 
 
-def get_generator(name: str | None = None) -> OutputGenerator:
+def get_generator(
+    name: str | None = None,
+    *,
+    gemini_api_key: str | None = None,
+    gemini_model: str | None = None,
+) -> OutputGenerator:
     """Resolve the configured `OutputGenerator`.
 
     The factory reads `SHOPEE_TH_GENERATOR` from the environment (default
@@ -363,6 +368,15 @@ def get_generator(name: str | None = None) -> OutputGenerator:
         name: explicit generator selector. One of `"stub"` (default),
             `"llm"`. Unknown values are treated as `"stub"` so a typo in
             the env var doesn't break the app — log once and continue.
+        gemini_api_key: explicit override for the `llm` path. Callers that
+            have a `Settings` instance (e.g. `create_app()`) should pass
+            `settings.gemini_api_key` here — `pydantic-settings` loads that
+            from `.env` without ever touching `os.environ`, so relying on
+            `os.environ.get("SHOPEE_TH_GEMINI_API_KEY")` alone silently
+            misses a `.env`-only key (the same class of bug that once broke
+            `SHOPEE_TH_GENERATOR` itself). Falls back to `os.environ` only
+            when not supplied, so direct env-var usage still works too.
+        gemini_model: same override, for the Gemini model id.
 
     Returns:
         An `OutputGenerator` instance. The `TemplateGenerator` is the v1
@@ -373,8 +387,8 @@ def get_generator(name: str | None = None) -> OutputGenerator:
         name = os.environ.get("SHOPEE_TH_GENERATOR", "stub") or "stub"
     if name == "llm":
         return LLMGenerator(
-            api_key=os.environ.get("SHOPEE_TH_GEMINI_API_KEY", ""),
-            model=os.environ.get("SHOPEE_TH_GEMINI_MODEL", "gemini-2.5-flash"),
+            api_key=gemini_api_key or os.environ.get("SHOPEE_TH_GEMINI_API_KEY", ""),
+            model=gemini_model or os.environ.get("SHOPEE_TH_GEMINI_MODEL", "gemini-2.5-flash"),
         )
     if name != "stub":
         # Unknown value — fall back to the safe default.
