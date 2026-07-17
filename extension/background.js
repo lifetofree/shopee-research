@@ -5,90 +5,93 @@
  * capture counter + an on/off toggle in chrome.storage so the popup can show
  * status. Never calls Shopee itself.
  */
+(function () {
+  "use strict";
 
-const SERVER_URL = "http://127.0.0.1:8000";
-const SAVE_ENDPOINT = SERVER_URL + "/api/saved";
-const HEALTH_ENDPOINT = SERVER_URL + "/health";
+  const SERVER_URL = "http://127.0.0.1:8000";
+  const SAVE_ENDPOINT = SERVER_URL + "/api/saved";
+  const HEALTH_ENDPOINT = SERVER_URL + "/health";
 
-// Defaults written on first install.
-const DEFAULTS = {
-  captureEnabled: true,
-  capturedCount: 0,
-  lastError: null,
-  lastSurface: null,
-  lastSavedAt: null,
-};
+  // Defaults written on first install.
+  const DEFAULTS = {
+    captureEnabled: true,
+    capturedCount: 0,
+    lastError: null,
+    lastSurface: null,
+    lastSavedAt: null,
+  };
 
-// --- lifecycle ----------------------------------------------------------
+  // --- lifecycle ----------------------------------------------------------
 
-chrome.runtime.onInstalled.addListener(async () => {
-  const cur = await chrome.storage.local.get(Object.keys(DEFAULTS));
-  const patch = {};
-  for (const [k, v] of Object.entries(DEFAULTS)) {
-    if (cur[k] === undefined) patch[k] = v;
-  }
-  if (Object.keys(patch).length) await chrome.storage.local.set(patch);
-});
-
-// --- message router -----------------------------------------------------
-
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg && msg.kind === "SAVE_ITEM") {
-    // The worker is woken by the message itself; do the fetch here (extension
-    // context, so no page-CSP block), then respond. Returning true keeps the
-    // message channel open for the async sendResponse.
-    _handleSaveItem(msg)
-      .then((r) => sendResponse(r))
-      .catch((err) => sendResponse({ ok: false, error: String(err && err.message || err) }));
-    return true; // async — keep the channel open
-  }
-  if (msg && msg.kind === "PING_SERVER") {
-    _pingServer().then(
-      (ok) => sendResponse({ ok }),
-      () => sendResponse({ ok: false }),
-    );
-    return true;
-  }
-  return false;
-});
-
-// --- save handling (single item, from a card Save button) ----------------
-
-async function _handleSaveItem(msg) {
-  const { item, query } = msg;
-  if (!item || !item.source_id) return { ok: false, error: "missing item.source_id" };
-
-  try {
-    const resp = await fetch(SAVE_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ item, query }),
-    });
-    if (!resp.ok) {
-      const detail = await resp.text().catch(() => "");
-      return { ok: false, error: `server ${resp.status}: ${detail.slice(0, 80)}` };
+  chrome.runtime.onInstalled.addListener(async () => {
+    const cur = await chrome.storage.local.get(Object.keys(DEFAULTS));
+    const patch = {};
+    for (const [k, v] of Object.entries(DEFAULTS)) {
+      if (cur[k] === undefined) patch[k] = v;
     }
-    // Bump the popup counter.
-    const cur = await chrome.storage.local.get({ capturedCount: 0 });
-    await chrome.storage.local.set({
-      capturedCount: cur.capturedCount + 1,
-      lastSurface: "affiliate",
-      lastSavedAt: new Date().toISOString(),
-      lastError: null,
-    });
-    return { ok: true };
-  } catch (e) {
-    const errMsg = String(e && e.message || e);
-    await chrome.storage.local.set({ lastError: errMsg });
-    return { ok: false, error: errMsg };
-  }
-}
+    if (Object.keys(patch).length) await chrome.storage.local.set(patch);
+  });
 
-async function _pingServer() {
-  try {
-    const resp = await fetch(HEALTH_ENDPOINT, { method: "GET" });
-    return resp.ok;
-  } catch {
+  // --- message router -----------------------------------------------------
+
+  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (msg && msg.kind === "SAVE_ITEM") {
+      // The worker is woken by the message itself; do the fetch here (extension
+      // context, so no page-CSP block), then respond. Returning true keeps the
+      // message channel open for the async sendResponse.
+      _handleSaveItem(msg)
+        .then((r) => sendResponse(r))
+        .catch((err) => sendResponse({ ok: false, error: String(err && err.message || err) }));
+      return true; // async — keep the channel open
+    }
+    if (msg && msg.kind === "PING_SERVER") {
+      _pingServer().then(
+        (ok) => sendResponse({ ok }),
+        () => sendResponse({ ok: false }),
+      );
+      return true;
+    }
     return false;
+  });
+
+  // --- save handling (single item, from a card Save button) ----------------
+
+  async function _handleSaveItem(msg) {
+    const { item, query } = msg;
+    if (!item || !item.source_id) return { ok: false, error: "missing item.source_id" };
+
+    try {
+      const resp = await fetch(SAVE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ item, query }),
+      });
+      if (!resp.ok) {
+        const detail = await resp.text().catch(() => "");
+        return { ok: false, error: `server ${resp.status}: ${detail.slice(0, 80)}` };
+      }
+      // Bump the popup counter.
+      const cur = await chrome.storage.local.get({ capturedCount: 0 });
+      await chrome.storage.local.set({
+        capturedCount: cur.capturedCount + 1,
+        lastSurface: "affiliate",
+        lastSavedAt: new Date().toISOString(),
+        lastError: null,
+      });
+      return { ok: true };
+    } catch (e) {
+      const errMsg = String(e && e.message || e);
+      await chrome.storage.local.set({ lastError: errMsg });
+      return { ok: false, error: errMsg };
+    }
   }
-}
+
+  async function _pingServer() {
+    try {
+      const resp = await fetch(HEALTH_ENDPOINT, { method: "GET" });
+      return resp.ok;
+    } catch {
+      return false;
+    }
+  }
+})();
