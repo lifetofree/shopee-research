@@ -131,26 +131,18 @@ def test_caption_missing_category_falls_back_to_keyword_or_generic() -> None:
     assert len(out) <= CAPTION_TOTAL_MAX
 
 
-def test_caption_sold_count_format() -> None:
+def test_caption_omits_price_and_sold() -> None:
+    """The caption is marketing copy (hooks attention), not a spec sheet —
+    price and sold count are deliberately omitted. They live on the product
+    page; the caption leads with the product + brand + a call to action."""
     gen = TemplateGenerator()
-    out_small = gen.caption(_item(sold=42))
-    out_k = gen.caption(_item(sold=2_345))
-    out_big = gen.caption(_item(sold=200_000))
-    assert "42 ชิ้น" in out_small
-    assert "2.3K ชิ้น" in out_k
-    assert "200K ชิ้น" in out_big
-
-
-def test_caption_zero_sold_uses_thai_zero_phrase() -> None:
-    gen = TemplateGenerator()
-    out = gen.caption(_item(sold=0))
-    assert "ยังไม่มียอดขาย" in out
-
-
-def test_caption_price_format_thousands_separator() -> None:
-    gen = TemplateGenerator()
-    out = gen.caption(_item(price=1290.0))
-    assert "฿1,290" in out
+    out = gen.caption(_item(price=1290.0, sold=2_345))
+    assert "฿" not in out, "price should not appear in the caption"
+    assert "ขายแล้ว" not in out, "sold count should not appear in the caption"
+    assert "2.3K" not in out, "compact sold count should not appear in the caption"
+    # The title and a call-to-action should still be present.
+    assert "iPhone 15" in out
+    assert "ส่งฟรี" in out
 
 
 # --- TemplateGenerator.clip_prompt ---------------------------------------

@@ -120,18 +120,6 @@ def _format_price(price: float) -> str:
     return f"฿{price:,.2f}"
 
 
-def _format_sold(sold: int) -> str:
-    """Format the sold count in natural Thai: `ขายแล้ว X ชิ้น` (or `X.XK ชิ้น`)."""
-    if sold <= 0:
-        return "ยังไม่มียอดขาย"
-    if sold >= 1_000:
-        # 1.2K, 12K, 120K — use 1 decimal under 10K, none above.
-        if sold < 10_000:
-            return f"ขายแล้ว {sold / 1_000:.1f}K ชิ้น"
-        return f"ขายแล้ว {sold // 1_000}K ชิ้น"
-    return f"ขายแล้ว {sold} ชิ้น"
-
-
 def _price_band_hashtag(price: float) -> str:
     for threshold, slug in _PRICE_BANDS:
         if price < threshold:
@@ -183,6 +171,10 @@ def _brand(item: Item) -> str | None:
 def _caption_body(item: Item) -> str:
     """Build the Thai body (≤ CAPTION_BODY_MAX). Returns empty string on no data.
 
+    The caption is marketing copy — it hooks attention and interest, not a
+    spec sheet. Price and sold count are deliberately omitted (they live on
+    the product page); the body leads with the product and brand only.
+
     Note: hashtags (including #ShopeeTH) are appended separately by
     `_all_hashtags` — do NOT put #ShopeeTH here, or it appears twice.
     """
@@ -191,9 +183,7 @@ def _caption_body(item: Item) -> str:
     parts: list[str] = [f"🔥 {title}"]
     if brand:
         parts.append(f"แบรนด์ {brand}")
-    parts.append(f"ราคา {_format_price(item.price)}")
-    parts.append(_format_sold(item.sold))
-    parts.append("ส่งฟรี")
+    parts.append("ส่งฟรี สนใจคลิกดูได้เลย")
     body = " | ".join(parts)
     return body[:CAPTION_BODY_MAX]
 
