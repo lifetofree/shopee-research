@@ -4,34 +4,33 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>shopee-th</title>
-  <meta name="description" content="Search Shopee Affiliate Thailand, save items, generate Thai captions and English clip prompts.">
+  <meta name="description" content="View Shopee Affiliate Thailand items captured by the browser extension. Generate Thai captions and English clip prompts.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="topbar">
-    <h1 class="brand">shopee-th</h1>
-    <p class="tagline">Search · save · generate copy</p>
+    <div class="topbar-inner">
+      <h1 class="brand">Shopee TH</h1>
+      <p class="tagline">Saved items · captions · clip prompts</p>
+    </div>
+    <div class="topbar-stats">
+      <span id="saved-count" class="stat-pill">0 items</span>
+      <button type="button" id="refresh-btn" class="refresh-btn" title="Reload saved items">↻</button>
+    </div>
   </header>
 
   <main>
-    <!-- Search section -->
-    <section class="search" aria-label="Search Shopee Affiliate Thailand">
-      <form id="search-form" class="search-form" autocomplete="off">
-        <label for="search-input" class="visually-hidden">Search keyword</label>
-        <input
-          id="search-input"
-          name="query"
-          type="search"
-          placeholder="Search a product (e.g. iphone 15 case)"
-          required
-          minlength="1"
-          maxlength="200"
-          aria-describedby="search-help"
-        >
-        <button type="submit" id="search-button">Search</button>
-      </form>
-      <p id="search-help" class="muted small">Press Enter or click Search. Empty results return an explicit empty state, not a hang.</p>
-      <div id="search-status" class="status" role="status" aria-live="polite" hidden></div>
+    <!-- Capture hint (shown when empty) -->
+    <section id="hint-section" class="hint" aria-label="How to capture items">
+      <div class="hint-box">
+        <h2>No saved items yet</h2>
+        <p>
+          Items are captured by the <strong>Shopee TH Capture</strong> browser extension.
+          Browse offers on <code>affiliate.shopee.co.th</code> and click the orange
+          <strong>Save</strong> button on any product card. Saved items appear here,
+          then you can generate Thai captions and English clip prompts for each.
+        </p>
+      </div>
     </section>
 
     <!-- Error banner (hidden by default) -->
@@ -40,68 +39,52 @@
       <button type="button" id="error-dismiss" class="dismiss" aria-label="Dismiss error">×</button>
     </div>
 
-    <!-- Search results -->
-    <section id="results-section" class="results" aria-label="Search results" hidden>
-      <h2 class="section-title">Results <span id="results-count" class="muted"></span></h2>
-      <ul id="results-grid" class="grid"></ul>
-    </section>
-
-    <!-- Saved items -->
-    <section id="saved-section" class="saved" aria-label="Saved items">
-      <h2 class="section-title">Saved items <span id="saved-count" class="muted"></span></h2>
-      <div id="saved-empty" class="empty muted">No saved items yet. Search above and click Save on anything that looks interesting.</div>
-      <ul id="saved-list" class="saved-list"></ul>
+    <!-- Saved items grid -->
+    <section id="saved-section" class="saved" aria-label="Saved items" hidden>
+      <ul id="saved-list" class="card-grid"></ul>
     </section>
   </main>
 
-  <!-- Reusable templates (cloned via JS) -->
-  <template id="tpl-result-card">
-    <li class="card">
-      <img class="card-thumb" alt="" loading="lazy">
-      <div class="card-body">
-        <h3 class="card-title"></h3>
-        <div class="card-meta">
-          <span class="price"></span>
-          <span class="sold"></span>
-          <span class="commission"></span>
-        </div>
-        <div class="card-actions">
-          <button type="button" class="btn-save">Save</button>
-          <span class="save-status muted small"></span>
-        </div>
-      </div>
-    </li>
-  </template>
-
+  <!-- Reusable template: one saved-item card -->
   <template id="tpl-saved-item">
-    <li class="saved-item" data-saved-id="">
-      <div class="saved-head">
-        <img class="saved-thumb" alt="" loading="lazy">
-        <div class="saved-meta">
-          <h3 class="saved-title"></h3>
-          <div class="saved-fields">
-            <span class="price"></span>
-            <span class="sold"></span>
-            <span class="commission"></span>
-          </div>
-        </div>
-        <div class="saved-actions">
-          <button type="button" class="btn-caption">Generate caption</button>
-          <button type="button" class="btn-clip">Generate clip prompt</button>
-          <button type="button" class="btn-remove danger">Remove</button>
-        </div>
+    <li class="item-card" data-saved-id="">
+      <div class="item-thumb-wrap">
+        <img class="item-thumb" alt="" loading="lazy">
+        <span class="commission-badge"></span>
       </div>
-      <div class="saved-outputs">
-        <details class="outputs-caption">
-          <summary>Captions</summary>
-          <ul class="output-list caption-list"></ul>
-        </details>
-        <details class="outputs-clip">
-          <summary>Clip prompts</summary>
-          <ul class="output-list clip-list"></ul>
-        </details>
+      <div class="item-body">
+        <h3 class="item-title"></h3>
+        <div class="item-stats">
+          <span class="stat stat-price">
+            <span class="stat-label">Price</span>
+            <span class="stat-value price"></span>
+          </span>
+          <span class="stat stat-sold">
+            <span class="stat-label">Sold</span>
+            <span class="stat-value sold"></span>
+          </span>
+          <span class="stat stat-comm">
+            <span class="stat-label">Commission</span>
+            <span class="stat-value commission"></span>
+          </span>
+        </div>
+        <div class="item-actions">
+          <button type="button" class="btn btn-caption">📝 Caption</button>
+          <button type="button" class="btn btn-clip">🎬 Clip prompt</button>
+          <button type="button" class="btn btn-remove">🗑</button>
+        </div>
+        <div class="item-outputs" hidden>
+          <details class="outputs-caption">
+            <summary>Captions</summary>
+            <ul class="output-list caption-list"></ul>
+          </details>
+          <details class="outputs-clip">
+            <summary>Clip prompts</summary>
+            <ul class="output-list clip-list"></ul>
+          </details>
+        </div>
+        <div class="item-status muted small" role="status" aria-live="polite"></div>
       </div>
-      <div class="saved-status muted small" role="status" aria-live="polite"></div>
     </li>
   </template>
 

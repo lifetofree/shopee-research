@@ -1,14 +1,10 @@
 """Static-file smoke for the SPA.
 
-The SPA itself is exercised manually in a browser; the `make e2e` ticket
-(the real end-to-end) covers live API behavior. This file gives us a
-non-Playwright safety net: it confirms the three artifacts exist, the
-HTML references the right assets, and the JS file parses (no syntax
-errors that would break `uvicorn` boot).
-
-A `make smoke`-style JS-execution check is left out of scope here — it
-would need Node in CI. The HTML + asset presence checks are the right
-floor for a v1 ticket.
+The SPA shows items captured by the browser extension (no more server-side
+search box — capture happens in the extension). This file gives us a
+non-Playwright safety net: confirms the three artifacts exist, the HTML
+references the right assets, the JS parses, and the documented endpoints are
+referenced.
 """
 
 from __future__ import annotations
@@ -34,45 +30,49 @@ def test_index_html_references_app_js_and_styles_css() -> None:
 
 
 def test_index_html_has_required_sections() -> None:
+    """The redesigned UI: saved-items grid is the focus. The dead search box
+    is gone (capture happens in the browser extension now)."""
     text = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
-    # Search form + button
-    assert 'id="search-form"' in text
-    assert 'id="search-input"' in text
-    assert 'id="search-button"' in text
-    # Results + saved containers
-    assert 'id="results-section"' in text
-    assert 'id="results-grid"' in text
+    # Saved-items containers (the core of the view)
     assert 'id="saved-section"' in text
     assert 'id="saved-list"' in text
+    assert 'id="saved-count"' in text
     # Error banner
     assert 'id="error-banner"' in text
     assert 'id="error-dismiss"' in text
+    # Empty-state hint
+    assert 'id="hint-section"' in text
+    # Refresh button (manual reload of saved items)
+    assert 'id="refresh-btn"' in text
     # Templates the JS clones
-    assert 'id="tpl-result-card"' in text
     assert 'id="tpl-saved-item"' in text
     assert 'id="tpl-output-row"' in text
+
+
+def test_index_html_no_dead_search_box() -> None:
+    """The server-side search box is dead (anti-bot blocks it) and was removed.
+    Capture happens via the browser extension's Save button now."""
+    text = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    assert 'id="search-form"' not in text, "dead search box should be removed"
+    assert 'id="search-input"' not in text, "dead search input should be removed"
+    assert 'id="results-section"' not in text, "dead results section should be removed"
 
 
 def test_app_js_exists_and_uses_iife() -> None:
     p = STATIC_DIR / "app.js"
     assert p.exists(), f"missing {p}"
     text = p.read_text(encoding="utf-8")
-    # Wraps in an IIFE so no globals leak.
     assert "(function ()" in text or "(function() {" in text
     assert '"use strict";' in text
-    # Exposes a smoke hook for future tests.
     assert "window.ShopeeTH" in text
 
 
 def test_app_js_calls_documented_endpoints() -> None:
-    """Static check that all 7 documented routes are referenced from the JS."""
+    """Static check that the surviving routes are referenced from the JS.
+    (POST /api/search is dead — removed with the search box.)"""
     text = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
-    # api.search → POST /api/search
-    assert '"/api/search"' in text and "method: \"POST\"" in text
     # api.listSaved → GET /api/saved
     assert '"/api/saved"' in text and "method: \"GET\"" in text
-    # api.saveItem → POST /api/saved
-    assert '"/api/saved",' in text  # appears in both listSaved (GET) and saveItem (POST)
     # DELETE
     assert 'method: "DELETE"' in text
     # Caption / clip-prompt
@@ -82,17 +82,14 @@ def test_app_js_calls_documented_endpoints() -> None:
     assert "/outputs" in text
 
 
-def test_app_js_handles_idempotency_for_save() -> None:
-    """The double-click guard is the visible idempotency contract."""
+def test_app_js_has_auto_refresh_for_captured_items() -> None:
+    """The view polls for newly-captured items so they appear without a reload."""
     text = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
-    assert "state.saving" in text
-    assert "state.saving.has" in text
-    assert "state.saving.add" in text
-    assert "state.saving.delete" in text
+    assert "refreshSaved" in text
+    assert "setInterval" in text or "POLL_INTERVAL_MS" in text
 
 
 def test_app_js_renders_error_banner_with_server_message() -> None:
-    """The uniform `ApiError` body is consumed (detail.message / detail.guidance)."""
     text = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
     assert "showError" in text
     assert "detail.message" in text
@@ -103,14 +100,14 @@ def test_styles_css_exists_and_has_root_vars() -> None:
     p = STATIC_DIR / "styles.css"
     assert p.exists(), f"missing {p}"
     text = p.read_text(encoding="utf-8")
-    # Design tokens via CSS variables.
     assert ":root" in text
     assert "--primary" in text
     assert "--danger" in text
+    # The redesign uses the Shopee-orange token for commission badges.
+    assert "--shopee" in text
 
 
 def test_styles_css_is_vanilla_no_framework_imports() -> None:
-    """No `@import url(https://...)` (no CDN framework) and no Tailwind directives."""
     text = (STATIC_DIR / "styles.css").read_text(encoding="utf-8")
     assert "@import" not in text
     assert "@tailwind" not in text
