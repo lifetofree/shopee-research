@@ -9,56 +9,12 @@
  * legitimately fetches (the SDK has already attached x-sap-sec). It does NOT
  * call Shopee itself or attach any tokens — only reads what the page made,
  * and relays it to the isolated-world relay script via window.postMessage.
+ *
+ * The actual fetch/XHR wrapping lives in shared/intercept.js (loaded first
+ * in this same content_scripts entry) since it's identical to
+ * content/affiliate.js's — only the watched endpoint and surface name differ.
  */
-(function () {
-  "use strict";
-
-  const RELAY_TYPE = "__SHOPEE_TH_CAPTURE__";
-  const WATCH = ["/api/v4/search/search_items"]; // Surface A
-
-  function isWatched(url) {
-    return WATCH.some((sub) => url.includes(sub));
-  }
-
-  function relay(url, body) {
-    try {
-      window.postMessage({ type: RELAY_TYPE, surface: "storefront", url, body }, "*");
-    } catch (e) {
-      // non-serializable body (image/font) — skip
-    }
-  }
-
-  // --- wrap fetch ---
-  const origFetch = window.fetch;
-  window.fetch = async function (...args) {
-    const response = await origFetch.apply(this, args);
-    try {
-      const url = typeof args[0] === "string" ? args[0] : (args[0] && args[0].url) || "";
-      if (isWatched(url) && response.ok) {
-        const clone = response.clone();
-        clone.text().then((text) => relay(url, text)).catch(() => {});
-      }
-    } catch (e) {}
-    return response;
-  };
-
-  // --- wrap XMLHttpRequest ---
-  const origOpen = XMLHttpRequest.prototype.open;
-  const origSend = XMLHttpRequest.prototype.send;
-  XMLHttpRequest.prototype.open = function (method, url, ...rest) {
-    this.__sthUrl = url;
-    return origOpen.call(this, method, url, ...rest);
-  };
-  XMLHttpRequest.prototype.send = function (...args) {
-    this.addEventListener("load", () => {
-      try {
-        if (this.__sthUrl && isWatched(this.__sthUrl) && this.status >= 200 && this.status < 300) {
-          relay(this.__sthUrl, this.responseText);
-        }
-      } catch (e) {}
-    });
-    return origSend.apply(this, args);
-  };
-
-  console.debug("[ShopeeTH] MAIN-world fetch/XHR wrappers installed (storefront)");
-})();
+window.ShopeeTHIntercept.install({
+  watch: ["/api/v4/search/search_items"], // Surface A
+  surface: "storefront",
+});

@@ -43,14 +43,26 @@ class Item(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     source_id: str = Field(description="Shopee's item id; idempotency key for saves.")
-    title: str = Field(default="", description="Product title (used by the caption/clip-prompt generator).")
-    image: str | None = Field(default=None, description="Full product image URL. None if the upstream item had no image.")
-    price: float | None = Field(default=None, ge=0.0, description="Price in THB. None when the upstream price is missing/garbled.")
-    sold: int | None = Field(default=None, ge=0, description="Historical sold count. None when the upstream omits it.")
+    title: str = Field(
+        default="", description="Product title (used by the caption/clip-prompt generator)."
+    )
+    image: str | None = Field(
+        default=None, description="Full product image URL. None if the upstream item had no image."
+    )
+    price: float | None = Field(
+        default=None, ge=0.0, description="Price in THB. None when the upstream price is missing/garbled."
+    )
+    sold: int | None = Field(
+        default=None, ge=0, description="Historical sold count. None when the upstream omits it."
+    )
     commission: float | None = Field(
         default=None,
         ge=0.0,
-        description="Commission rate as a fraction (0.06 = 6%). None until Surface B lands.",
+        description=(
+            "Commission rate as a fraction (0.06 = 6%). Always None -- Surface B "
+            "(the only source for this) isn't server-side replayable; see "
+            "docs/research/data-surfaces.md §3.6."
+        ),
     )
     raw: dict[str, Any] = Field(
         default_factory=dict,

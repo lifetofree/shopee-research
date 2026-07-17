@@ -20,7 +20,7 @@
   "content_scripts": [
     {
       "matches": ["https://shopee.co.th/*"],
-      "js": ["content/storefront.js"],
+      "js": ["shared/intercept.js", "content/storefront.js"],
       "run_at": "document_start",
       "world": "MAIN"
     },
@@ -31,7 +31,7 @@
     },
     {
       "matches": ["https://affiliate.shopee.co.th/*"],
-      "js": ["content/affiliate.js"],
+      "js": ["shared/intercept.js", "content/affiliate.js"],
       "run_at": "document_start",
       "world": "MAIN"
     },
