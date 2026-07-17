@@ -46,3 +46,4 @@ data/*.db-shm
 *~
 .capture-stop
 .chrome-capture-profile/
+.zcode/
