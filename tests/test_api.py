@@ -224,17 +224,16 @@ async def test_save_list_get_outputs_delete_round_trip(
     clip = resp.json()
     assert len(clip["body"]) <= 300
 
-    # 7. caption again — history is preserved
+    # 7. caption again — replace mode: the prior caption is replaced, not
+    #    stacked. (One caption at a time per item — re-clicking refreshes.)
     resp = await client.post(f"/api/saved/{first_id}/caption")
     assert resp.status_code == 200
 
-    # 8. list outputs by kind
+    # 8. list outputs by kind — only the latest caption remains.
     resp = await client.get(f"/api/saved/{first_id}/outputs?kind=caption")
     assert resp.status_code == 200
     outputs = resp.json()["outputs"]
-    assert len(outputs) == 2  # both caption generations kept
-    # Newest first.
-    assert outputs[0]["generated_at"] >= outputs[1]["generated_at"]
+    assert len(outputs) == 1  # replace mode: prior caption was cleared
 
     resp = await client.get(f"/api/saved/{first_id}/outputs?kind=clip_prompt")
     assert resp.status_code == 200

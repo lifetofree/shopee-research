@@ -331,6 +331,10 @@
         kind === "caption" ? await api.generateCaption(id) : await api.generateClipPrompt(id);
       const listSel = kind === "caption" ? ".caption-list" : ".clip-list";
       const listEl = containerNode.querySelector(listSel);
+      // Replace mode: the server deletes prior outputs of this kind before
+      // generating, so the UI mirrors that — clear the list, then show the
+      // single new output. No stacking on repeated clicks.
+      listEl.replaceChildren();
       prependOutputRow(listEl, { body: result.body, generated_at: result.generated_at });
       containerNode.querySelector(".item-outputs").hidden = false;
       statusEl.textContent = "Done ✓";

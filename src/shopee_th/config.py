@@ -68,8 +68,22 @@ class Settings(BaseSettings):
         default="stub",
         description=(
             "Output generator selector. 'stub' (default) → TemplateGenerator; "
-            "'llm' → LLMGenerator (not implemented this iteration)."
+            "'llm' → LLMGenerator (Google Gemini)."
         ),
+    )
+
+    # --- LLM (Google Gemini) ---
+    gemini_api_key: str = Field(
+        default="",
+        description=(
+            "Google AI Studio API key for Gemini. Get one free at "
+            "https://aistudio.google.com/apikey. Required when "
+            "SHOPEE_TH_GENERATOR=llm."
+        ),
+    )
+    gemini_model: str = Field(
+        default="gemini-2.5-flash",
+        description="Gemini model id. gemini-2.5-flash is on the free tier.",
     )
 
     # --- Persistence ---

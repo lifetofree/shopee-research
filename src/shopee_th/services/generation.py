@@ -8,9 +8,10 @@ Per the `implement-output-templates` ticket body:
   rule-based caption (Thai body ≤ 180 chars + 4–7 English hashtags, total
   ≤ 250) and a short English 8-second vertical-video brief (≤ 300 chars).
   Handles empty title / missing brand / missing category gracefully.
-- **`LLMGenerator`** (env ``llm``) is a no-op skeleton that raises
-  ``NotImplementedError`` on every call — explicit slot for a follow-up map
-  to drop in a real LLM client.
+- **`LLMGenerator`** (env ``llm``) calls Google Gemini (``gemini-2.5-flash``,
+  free tier) for natural, varied Thai captions + English clip prompts. Falls
+  back to the ``TemplateGenerator`` output on any error (missing key, quota,
+  network) so a generation call never 500s.
 - **`get_generator() -> OutputGenerator``** factory reads
   ``SHOPEE_TH_GENERATOR`` from the environment (default ``"stub"``); an
   explicit ``name`` argument is supported for tests and for callers that want
@@ -245,35 +246,107 @@ class TemplateGenerator:
         return prompt[:CLIP_PROMPT_MAX]
 
 
-# --- LLMGenerator (skeleton) -------------------------------------------------
+# --- LLMGenerator (Google Gemini) -------------------------------------------
 
 
 class LLMGenerator:
-    """Stub for a future LLM-backed implementation.
+    """LLM-backed caption + clip-prompt generator using Google Gemini.
 
-    Per the ticket: "A no-op `LLMGenerator` skeleton class that raises
-    `NotImplementedError` on every call — explicit slot for a follow-up map
-    to drop in a real LLM client."
+    Activated by ``SHOPEE_TH_GENERATOR=llm`` + ``SHOPEE_TH_GEMINI_API_KEY``.
+    Falls back to the TemplateGenerator's output shape on any error (missing
+    key, network failure, quota exhaustion) so the API never 500s on a
+    generation call — the user still gets a usable caption.
 
-    The follow-up map is expected to:
-    - implement `caption(item)` and `clip_prompt(item)` (likely via a remote
-      completion API),
-    - keep the same return-type contract (str, ≤ the documented caps), and
-    - gate any cloud-call costs behind `SHOPEE_TH_GENERATOR=llm` (the env
-      var the factory reads) so the v1 prototype isn't accidentally billed.
+    The Gemini client is lazily initialised on the first call so the module
+    imports cleanly even without an API key (the default `stub` path never
+    touches the network).
     """
 
-    def caption(self, item: Item) -> str:  # pragma: no cover - always raises
-        raise NotImplementedError(
-            "LLMGenerator.caption is not implemented in this map; "
-            "fill in a follow-up map (see wayfinder) or use SHOPEE_TH_GENERATOR=stub."
-        )
+    def __init__(
+        self,
+        api_key: str | None = None,
+        model: str | None = None,
+        fallback: TemplateGenerator | None = None,
+    ) -> None:
+        self._api_key = api_key or os.environ.get("SHOPEE_TH_GEMINI_API_KEY", "")
+        self._model = model or os.environ.get("SHOPEE_TH_GEMINI_MODEL", "gemini-2.5-flash")
+        self._fallback = fallback or TemplateGenerator()
+        self._client = None  # lazily initialised
 
-    def clip_prompt(self, item: Item) -> str:  # pragma: no cover - always raises
-        raise NotImplementedError(
-            "LLMGenerator.clip_prompt is not implemented in this map; "
-            "fill in a follow-up map (see wayfinder) or use SHOPEE_TH_GENERATOR=stub."
+    def _ensure_client(self):
+        """Lazily create the Gemini client. Raises if no API key is set."""
+        if self._client is not None:
+            return self._client
+        if not self._api_key:
+            raise RuntimeError(
+                "SHOPEE_TH_GEMINI_API_KEY is not set; get a free key at "
+                "https://aistudio.google.com/apikey"
+            )
+        # Import here so the module loads without the SDK installed in the
+        # default `stub` path.
+        from google import genai  # type: ignore[import-untyped]
+
+        self._client = genai.Client(api_key=self._api_key)
+        return self._client
+
+    def _generate(self, prompt: str) -> str:
+        """Call Gemini and return the text, or raise on any failure."""
+        client = self._ensure_client()
+        response = client.models.generate_content(model=self._model, contents=prompt)
+        # The SDK exposes the text via `.text` (concatened parts) or `.candidates`.
+        text = getattr(response, "text", None)
+        if not text:
+            # Fall back to digging into candidates/parts if .text is unset.
+            parts = getattr(response, "candidates", None)
+            if parts:
+                try:
+                    text = parts[0].content.parts[0].text
+                except (AttributeError, IndexError, TypeError):
+                    text = ""
+        return (text or "").strip()
+
+    def caption(self, item: Item) -> str:
+        title = (item.title or "").strip() or "this product"
+        prompt = (
+            "You write social-media captions for a Shopee Thailand affiliate.\n"
+            "Write ONE caption for the product below. Rules:\n"
+            "- The BODY must be in THAI: a punchy, persuasive hook (1-2 sentences) "
+            "that makes a Thai shopper want to click. No price, no sold count.\n"
+            "- Append 4 to 7 ENGLISH hashtags after the body (e.g. #ShopeeTH, "
+            "#<category>, #<brand>).\n"
+            "- TOTAL length must be at most 250 characters. Be concise.\n"
+            "- Output ONLY the caption text, nothing else (no quotes, no labels).\n\n"
+            f"Product title: {title}\n"
+            f"Brand: {_brand(item) or '(unknown)'}\n"
         )
+        try:
+            text = self._generate(prompt)
+            if text:
+                return text[:CAPTION_TOTAL_MAX]
+        except Exception:
+            pass
+        # Fallback: deterministic template so the call never fails for the user.
+        return self._fallback.caption(item)
+
+    def clip_prompt(self, item: Item) -> str:
+        title = (item.title or "").strip() or "this product"
+        prompt = (
+            "You write short video briefs for a content creator.\n"
+            "Write ONE 8-second vertical-video (9:16) shot brief in ENGLISH for "
+            "the product below. Rules:\n"
+            "- 1-2 sentences: what to show, camera style, mood.\n"
+            "- At most 300 characters.\n"
+            "- Output ONLY the brief text, nothing else.\n\n"
+            f"Product title: {title}\n"
+            f"Brand: {_brand(item) or '(unknown)'}\n"
+        )
+        try:
+            text = self._generate(prompt)
+            if text:
+                return text[:CLIP_PROMPT_MAX]
+        except Exception:
+            pass
+        return self._fallback.clip_prompt(item)
 
 
 # --- Factory ----------------------------------------------------------------
@@ -293,14 +366,17 @@ def get_generator(name: str | None = None) -> OutputGenerator:
 
     Returns:
         An `OutputGenerator` instance. The `TemplateGenerator` is the v1
-        default; `LLMGenerator` raises on every call in this map.
+        default; `LLMGenerator` calls Google Gemini (needs
+        `SHOPEE_TH_GEMINI_API_KEY`).
     """
     if name is None:
         name = os.environ.get("SHOPEE_TH_GENERATOR", "stub") or "stub"
     if name == "llm":
-        return LLMGenerator()
+        return LLMGenerator(
+            api_key=os.environ.get("SHOPEE_TH_GEMINI_API_KEY", ""),
+            model=os.environ.get("SHOPEE_TH_GEMINI_MODEL", "gemini-2.5-flash"),
+        )
     if name != "stub":
-        # Unknown value — fall back to the safe default. The HTTP layer can
-        # log this; the generator itself stays side-effect-free.
+        # Unknown value — fall back to the safe default.
         pass
     return TemplateGenerator()

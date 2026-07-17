@@ -39,6 +39,7 @@ from shopee_th.models.db import Output
 from shopee_th.models.domain import Item, OutputDTO, SavedItemDTO
 from shopee_th.models.repository import (
     add_output,
+    delete_outputs,
     delete_saved,
     get_saved,
     list_outputs,
@@ -195,6 +196,9 @@ async def _generate_and_persist(
         body = generator.caption(item)
     else:
         body = generator.clip_prompt(item)
+    # Replace mode: clear prior outputs of the same kind so each click shows
+    # one caption/clip (not a stacking history). The user re-clicks to refresh.
+    await delete_outputs(session, item_id, kind=kind)
     return await add_output(session, item_id, kind=kind, body=body)
 
 

@@ -11,7 +11,7 @@ the session lifecycle and transaction boundaries.
 
 from __future__ import annotations
 
-from sqlalchemy import desc, select
+from sqlalchemy import delete, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shopee_th.models.db import Output, SavedItem
@@ -70,6 +70,19 @@ async def add_output(session: AsyncSession, saved_item_id: int, kind: str, body:
     session.add(row)
     await session.flush()
     return row
+
+
+async def delete_outputs(session: AsyncSession, saved_item_id: int, kind: str) -> int:
+    """Delete all outputs of ``kind`` for ``saved_item_id``. Returns the count deleted.
+
+    Used when regenerating: the UI shows one caption/clip at a time, so prior
+    outputs of the same kind are cleared before the new one is added.
+    """
+    stmt = delete(Output).where(
+        Output.saved_item_id == saved_item_id, Output.kind == kind
+    )
+    result = await session.execute(stmt)
+    return result.rowcount or 0
 
 
 async def list_outputs(

@@ -197,19 +197,62 @@ def test_clip_prompt_is_english() -> None:
     assert thai_codepoints <= 20
 
 
-# --- LLMGenerator skeleton -----------------------------------------------
+# --- LLMGenerator (Google Gemini, mocked — never hits the network) ----------
 
 
-def test_llm_generator_raises_on_caption() -> None:
-    gen = LLMGenerator()
-    with pytest.raises(NotImplementedError):
-        gen.caption(_item())
+def test_llm_generator_uses_gemini_response_for_caption(monkeypatch: pytest.MonkeyPatch) -> None:
+    """When the Gemini call succeeds, its text is returned (capped to 250)."""
+    gen = LLMGenerator(api_key="fake-key")
+
+    def fake_generate(self, _prompt):
+        return "🔥 สุดยอดเคส iPhone ราคาเบรค #ShopeeTH #iphone #case #premium"
+
+    monkeypatch.setattr(LLMGenerator, "_generate", fake_generate)
+    out = gen.caption(_item())
+    assert len(out) <= 250
+    assert "#ShopeeTH" in out
 
 
-def test_llm_generator_raises_on_clip_prompt() -> None:
-    gen = LLMGenerator()
-    with pytest.raises(NotImplementedError):
-        gen.clip_prompt(_item())
+def test_llm_generator_caption_falls_back_when_no_api_key() -> None:
+    """No API key → the template fallback runs (never raises)."""
+    gen = LLMGenerator(api_key="")
+    out = gen.caption(_item())
+    assert isinstance(out, str)
+    assert len(out) <= 250
+    assert out  # non-empty placeholder
+
+
+def test_llm_generator_caption_falls_back_on_call_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+    """If the Gemini call raises (quota, network), the template fallback runs."""
+    gen = LLMGenerator(api_key="fake-key")
+
+    def boom(self, _prompt):
+        raise RuntimeError("429 quota exceeded")
+
+    monkeypatch.setattr(LLMGenerator, "_generate", boom)
+    out = gen.caption(_item())
+    assert isinstance(out, str)
+    assert len(out) <= 250
+    assert "#ShopeeTH" in out  # template fallback always includes this
+
+
+def test_llm_generator_clip_prompt_uses_gemini_response(monkeypatch: pytest.MonkeyPatch) -> None:
+    gen = LLMGenerator(api_key="fake-key")
+
+    def fake_generate(self, _prompt):
+        return "Vertical 9:16, 8s, close-up of the iPhone case, bright lighting."
+
+    monkeypatch.setattr(LLMGenerator, "_generate", fake_generate)
+    out = gen.clip_prompt(_item())
+    assert len(out) <= 300
+
+
+def test_llm_generator_clip_prompt_falls_back_when_no_api_key() -> None:
+    gen = LLMGenerator(api_key="")
+    out = gen.clip_prompt(_item())
+    assert isinstance(out, str)
+    assert len(out) <= 300
+    assert out
 
 
 # --- Factory -------------------------------------------------------------
