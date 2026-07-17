@@ -33,39 +33,42 @@
     const cards = document.querySelectorAll(CARD_SELECTOR);
     cards.forEach((card) => {
       if (card.hasAttribute(DECORATED_ATTR)) return;
-      try {
-        const data = readCard(card);
-        if (!data || !data.source_id) return;
-        addSaveButton(card, data);
-        card.setAttribute(DECORATED_ATTR, "1");
-      } catch (e) {
-        // Skip a card that doesn't match the expected shape; don't break others.
-      }
+      // At decoration time we only need the itemid (from the card href) to
+      // attach a Save button. The full data read (with API-cache enrichment)
+      // happens at CLICK time — by then the API response that rendered the
+      // card has definitely been intercepted and cached. Reading the cache at
+      // decoration time races the API response and usually misses.
+      const itemid = itemIdFromCard(card);
+      if (!itemid) return;
+      addSaveButton(card, itemid);
+      card.setAttribute(DECORATED_ATTR, "1");
     });
   }
 
-  /** Read product data from a card's DOM, enriched by the API cache if present.
-   *  The API response (cached by affiliate_relay.js) carries richer fields than
-   *  the card DOM — real sold count, full price, clean image id — so we merge
-   *  cached values over the DOM-read values where available. */
-  function readCard(card) {
+  /** Pull the numeric itemid out of a card's product-offer href. */
+  function itemIdFromCard(card) {
     const anchor = card.querySelector('a[href*="/offer/product_offer/"]');
     if (!anchor) return null;
-
-    // itemid is the numeric tail of /offer/product_offer/<itemid>
     const href = anchor.getAttribute("href") || "";
     const m = href.match(/\/offer\/product_offer\/(\d+)/);
-    if (!m) return null;
-    const itemid = m[1];
+    return m ? m[1] : null;
+  }
 
+  /** Read full product data for a card, merged with the API cache if present.
+   *  Called at CLICK time so the cache (filled by affiliate_relay.js when the
+   *  list API responded) is reliably populated. The API cache carries richer
+   *  fields than the DOM — real sold count, full price, clean image id. */
+  function readCard(card, itemid) {
     // DOM-read values (always available — this is what the user sees).
     const title = textOf(card, ".ItemCard__name") || "";
     const priceText = textOf(card, ".ItemCardPrice__wrap .price");
     const price = parsePrice(priceText);
     const commission = parseCommission(textOf(card, ".commRate"));
     const imageId = readImageId(card);
+    const anchor = card.querySelector('a[href*="/offer/product_offer/"]');
+    const href = anchor ? anchor.getAttribute("href") || "" : "";
 
-    // API-cached values (richer, if the list response was intercepted).
+    // API-cached values (richer, filled when the list response was intercepted).
     const cached = (window.__ShopeeTHCache__ && window.__ShopeeTHCache__.get(itemid)) || null;
 
     // Prefer cached (structured) data; fall back to DOM-read values.
@@ -111,7 +114,7 @@
 
   // --- button -----------------------------------------------------------
 
-  function addSaveButton(card, data) {
+  function addSaveButton(card, itemid) {
     // Attach into the custom section, next to "Get Link" if present; else the card root.
     const host =
       card.querySelector(".ItemCard__custom") ||
@@ -124,6 +127,9 @@
     btn.addEventListener("click", (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
+      // Read the card + cache at CLICK time (not decoration time) so the API
+      // enrichment cache has had time to populate.
+      const data = readCard(card, itemid);
       onSaveClick(btn, data);
     });
     host.appendChild(btn);
