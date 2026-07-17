@@ -179,50 +179,79 @@
   }
 
   function renderSavedItems() {
-    dom.savedList.replaceChildren();
+    // Incremental patch: keep existing cards in place (preserving any <details>
+    // the user expanded, scroll position, etc.), only add new items and remove
+    // deleted ones. A full replaceChildren() on every poll would collapse every
+    // expanded caption/clip section every 5s.
     const n = state.savedItems.length;
     dom.savedCount.textContent = n === 1 ? "1 item" : `${n} items`;
     dom.hintSection.hidden = n > 0;
     dom.savedSection.hidden = n === 0;
-    if (n === 0) return;
 
-    const tpl = document.getElementById("tpl-saved-item");
-    for (const item of state.savedItems) {
-      const node = tpl.content.firstElementChild.cloneNode(true);
-      const id = item.id;
-      node.dataset.savedId = String(id);
-
-      // Image + commission badge (the focal point).
-      const img = node.querySelector(".item-thumb");
-      img.src = item.item.image || "";
-      img.alt = item.item.title || "";
-      const commBadge = node.querySelector(".commission-badge");
-      const commission = formatCommission(item.item.commission);
-      commBadge.textContent = commission ? `${commission} commission` : "";
-
-      // Title + stats.
-      node.querySelector(".item-title").textContent = item.item.title || "(untitled)";
-      node.querySelector(".price").textContent = formatPrice(item.item.price);
-      node.querySelector(".sold").textContent = formatSold(item.item.sold);
-      const commStat = node.querySelector(".commission");
-      commStat.textContent = commission || "";
-
-      // Buttons.
-      const captionBtn = node.querySelector(".btn-caption");
-      const clipBtn = node.querySelector(".btn-clip");
-      const removeBtn = node.querySelector(".btn-remove");
-      const statusEl = node.querySelector(".item-status");
-      if (state.inflight.has(id)) {
-        for (const b of [captionBtn, clipBtn, removeBtn]) b.disabled = true;
-        statusEl.textContent = "Working…";
-      }
-      captionBtn.addEventListener("click", () => handleGenerate(id, "caption", node, statusEl));
-      clipBtn.addEventListener("click", () => handleGenerate(id, "clip_prompt", node, statusEl));
-      removeBtn.addEventListener("click", () => handleRemove(id, node, statusEl));
-
-      dom.savedList.appendChild(node);
-      loadAndRenderOutputs(id, node);
+    // Index existing cards by saved-id for quick lookup.
+    const existingById = {};
+    for (const node of dom.savedList.children) {
+      const sid = node.dataset.savedId;
+      if (sid) existingById[sid] = node;
     }
+
+    const seenIds = new Set();
+    const tpl = document.getElementById("tpl-saved-item");
+    // Items arrive newest-first from the server. Insert new cards in order so
+    // the DOM matches: walk the list, and for new items, insert before the
+    // first already-placed card (i.e. at the position matching their rank).
+    let insertBefore = dom.savedList.firstChild;
+    for (const item of state.savedItems) {
+      const idKey = String(item.id);
+      seenIds.add(idKey);
+      const existing = existingById[idKey];
+      if (existing) {
+        // Already placed — next new item goes after this one.
+        insertBefore = existing.nextElementSibling;
+        continue;
+      }
+      // New item — create a fresh card and insert at the current rank position.
+      const node = tpl.content.firstElementChild.cloneNode(true);
+      node.dataset.savedId = idKey;
+      fillCard(node, item);
+      wireCardEvents(node, item.id);
+      dom.savedList.insertBefore(node, insertBefore);
+      loadAndRenderOutputs(item.id, node);
+      insertBefore = node.nextElementSibling;
+    }
+
+    // Remove cards for items that no longer exist (deleted elsewhere).
+    for (const sid of Object.keys(existingById)) {
+      if (!seenIds.has(sid)) existingById[sid].remove();
+    }
+  }
+
+  /** Wire up the caption/clip/remove buttons on a freshly-created card. */
+  function wireCardEvents(node, id) {
+    const statusEl = node.querySelector(".item-status");
+    node.querySelector(".btn-caption").addEventListener("click", () =>
+      handleGenerate(id, "caption", node, statusEl),
+    );
+    node.querySelector(".btn-clip").addEventListener("click", () =>
+      handleGenerate(id, "clip_prompt", node, statusEl),
+    );
+    node.querySelector(".btn-remove").addEventListener("click", () =>
+      handleRemove(id, node, statusEl),
+    );
+  }
+
+  /** Populate a fresh card's static fields (image, title, stats) from an item.
+   *  Called once on creation; not re-run on poll (to preserve <details> state). */
+  function fillCard(node, item) {
+    const img = node.querySelector(".item-thumb");
+    img.src = item.item.image || "";
+    img.alt = item.item.title || "";
+    const commission = formatCommission(item.item.commission);
+    node.querySelector(".commission-badge").textContent = commission ? `${commission} commission` : "";
+    node.querySelector(".item-title").textContent = item.item.title || "(untitled)";
+    node.querySelector(".price").textContent = formatPrice(item.item.price);
+    node.querySelector(".sold").textContent = formatSold(item.item.sold);
+    node.querySelector(".commission").textContent = commission || "";
   }
 
   async function loadAndRenderOutputs(savedId, containerNode) {
